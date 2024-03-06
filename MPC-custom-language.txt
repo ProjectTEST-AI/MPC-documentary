@@ -1,0 +1,15 @@
+## MPC custom language
+ID <Command-name> [Readable data structure] ex: [ID value mode bank# cell# destID partID]
+{Separated data structure, ex. 123 12 1234} ; {Encoded data structure, ex. 123121234}  *REMEMBER, MAX 15 DIGITS!*
+(Description)
+
+// Important stuff (00)
+01 <End-of-instructions> [ID]
+{01} ; {01}
+
+// Input & output (10)
+<Data-Input> [bank# cell#]
+{123 123} ; {123123}
+(Inputs specified data)
+
+<Data-Request> [bank# cell#]
