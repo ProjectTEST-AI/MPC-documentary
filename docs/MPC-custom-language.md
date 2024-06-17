@@ -39,7 +39,9 @@ Current code formatting:
 ### ```10 100 99999 99999```
 
 `10` : opCodes (Operation Codes). Refrence numbers for the general type of operation.
+
 `100` : sub-opCodes (sub Operation Codes). Reference numbers for the specific type of operation within the opCode.
+
 `99999` : Value that will be processed.
 
 ### opCodes
