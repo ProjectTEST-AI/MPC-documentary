@@ -10,6 +10,13 @@
 
 - (TODO) Movement, X and Z axis movement with rotation `Y axis (up-down) will be added later.`
 
+- (TODO) Processor, the processor will do some math and come up with the distance between the player and the position where the ray is detected to be hit.
+
+  we would have multiple raycast cores/procs and connected in paralel. each proc will have a hardcoded number assigned to them as their core number, and another number that indicates the total ammount of cores available. Theese numbers will be crucial, as each core/processor will self assign which ray they are going to be casting, with the formula:
+
+``` lastRay = coreNumber ``` \
+``` currentRay = lastRay + totalCoreAmmount ```
+
 - (TODO) Memory bank, we will use 2 memory banks in total. Data placement in the banks are in the documentation section.
 
 
@@ -29,9 +36,8 @@
 
 ### - Variable Denotation
   Most if not all variables are or will be cut down and abbreviated to fit mindustry's small variable box whilst still being readable in a glance. any complaints will be **ignored asf** (:D)
-> - 
-> - 
-> - 
+> - Main processor
+> - Raycast processor
 
 
 # Documentation will be updated with time.
