@@ -12,25 +12,31 @@
 
 - (TODO) Processor, the processor will do some math and come up with the distance between the player and the position where the ray is detected to be hit.
 
-  we would have multiple raycast cores/procs and connected in paralel. each proc will have a hardcoded number assigned to them as their core number, and another number that indicates the total ammount of cores available. Theese numbers will be crucial, as each core/processor will self assign which ray they are going to be casting, with the formula:
+  We would have multiple raycast cores/procs and connected in paralel. each proc will have a hardcoded number assigned to them as their core number, and another number that indicates the total ammount of cores available. Theese numbers will be crucial, as each core/processor will self assign which ray they are going to be casting, with the formula:
 
-``` lastRay = coreNumber ``` \
-``` currentRay = lastRay + totalCoreAmmount ```
+  ``` lastRay = coreNumber ``` \
+  ``` currentRay = lastRay + totalCoreAmmount ```
 
-- (TODO) Memory bank, we will use 2 memory banks in total. Data placement in the banks are in the documentation section.
+  After the processor comes up with the distance, it will output to the corresponding cell in the memory bank. 
+
+- (TODO) Memory bank, we will use **atleast** 2 memory banks. Data placement in the banks are in the documentation section.
 
 
 
 ##  Documentation
 ### - Data placement in Memory bank
 > BANK1 :
->> - #0 = a
->> - #1 = b
-> 
-> BANK2 :
 >> - #0 = Distance from the player to the position where ray[0] detected to hit a wall
 >> - #1 = Distance from the player to the position where ray[1] detected to hit a wall
 >> - #2 = Distance from the player to the position where ray[2] detected to hit a wall
+>> - and so on.
+>> (NOTE: default value is -1, to indicate rays that are processed)
+> 
+> BANK2 and so on.. :
+>> - #0 = position X of the start of wall #0
+>> - #1 = position Y of the start of wall #0
+>> - #2 = position X of the end of wall #0 
+>> - #3 = position Y of the end of wall #0
 >> - and so on.
 >> (NOTE: default value is -1, to indicate rays that are processed)
 
