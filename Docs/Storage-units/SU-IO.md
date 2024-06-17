@@ -1,0 +1,1 @@
+# Documentation for the Input/Output gate of the Storage units of the MPC project

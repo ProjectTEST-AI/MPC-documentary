@@ -1,0 +1,1 @@
+# Documentation for the Input/Output gate of the RAM of the MPC project

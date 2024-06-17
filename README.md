@@ -12,5 +12,4 @@ As one says, any game with a sufficient integrated processing mechanics can and 
 
 #
 #
-
-# To writers, Please write newly added documentation with markdown notation as this repo will eventually be hosted into github pages.
+# To writers, ***Please*** write newly added documentation with markdown notation as this repo will eventually be hosted into github pages.
