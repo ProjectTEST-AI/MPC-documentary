@@ -1,4 +1,4 @@
-# Documentation for a self-made raycaster using mLog in mindustry logic.
+# Documentation for the Raycaster of the MPC project
 
 ##  Concepts - Tasks
 - (TODO) Rendered walls will be in one color in this stage `textures will come later.`
@@ -10,14 +10,17 @@
 
 - (TODO) Movement, X and Z axis movement with rotation `Y axis (up-down) will be added later.`
 
-- (TODO) Processor, the processor will do some math and come up with the distance between the player and the position where the ray is detected to be hit.
+- (TODO) Processor, we will have 2 procs. the first processor will do some math and come up with the distance between the player and the position where the ray is detected to be hit.
 
   We would have multiple raycast cores/procs and connected in paralel. each proc will have a hardcoded number assigned to them as their core number, and another number that indicates the total ammount of cores available. Theese numbers will be crucial, as each core/processor will self assign which ray they are going to be casting, with the formula:
 
   ``` lastRay = coreNumber ``` \
   ``` currentRay = lastRay + totalCoreAmmount ```
 
-  After the processor comes up with the distance, it will output to the corresponding cell in the memory bank. 
+  After the processor comes up with the distance, it will output to the corresponding cell in the memory bank.
+
+  #### The second Processor
+  will convert the outputted distances in bank#2 and so on.. into a format where the RPC(Render Processing Unit) would understand and puts the values in the VRAM.
 
 - (TODO) Memory bank, we will use **atleast** 2 memory banks. Data placement in the banks are in the documentation section.
 
