@@ -30,8 +30,29 @@ With the newfound info, we can conclude that our interpreted code has to fit wit
 
 **Third and fourth digits** `999999` Theese numbers are the values to be processed. we got rid of the 16-bit limit because why do we even have it, and went with 5 * 2 values to be processed in a single command.
 
-
+With all that done, all that's left is to assign opCodes and sub-opCodes and **code it all!**
 
 
 #
 # Actual documentation (Skipping story)
+Current code formatting:
+### ```10 100 99999 99999```
+
+`10` : opCodes (Operation Codes). Refrence numbers for the general type of operation.
+`100` : sub-opCodes (sub Operation Codes). Reference numbers for the specific type of operation within the opCode.
+`99999` : Value that will be processed.
+
+### opCodes
+```
+10 : 
+11 : 
+12 : 
+13 : 
+14 : 
+15 : 
+16 : 
+17 : 
+18 : 
+19 : 
+20 : 
+```
