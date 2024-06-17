@@ -1,31 +1,6 @@
-## MPC custom language
-ID <Command-name> [Readable data structure]
-{Separated data structure} ; {Encoded data structure}<digit count>  *REMEMBER, MAX 15 DIGITS!*
-(Description)
+# MPC custom language
+The programming language for MPC does seem to be a huge roadblock but we have some concepts for now, code it later.
 
-## Data structure information
-- <LocationID> | sourceID | destinationID
-  (location identifier of specified data
-  10 = self
-  11 = self-section1
-  20 = CPU (L3)
-  30 = GPU
-  40 = RAM
-  50 = SSD (non-perma storage)
-  60 = external storage
-  )
+The Mindustry memory cell have somewhat of a weird behaviour where if you inputa number so high it would round up the numbers. based on some testing, we have found the limit before rounding happens, that is:
 
-
-# Custom lang
-// Important stuff (-00)
--01 <End-of-instructions> [ID]
-{-01} ; {-01}
-
-// Input & output (10)
-11 <Singular-Data-Displacement> [sourceID sourceBank# sourceCell# : destinationID destinationBank# destinationCell#]
-{11 12 123 123 : 11 12 123 123} ; {1112123123 : 1112123123}<10 : 10>
-(Moves a singular specified data to destination)
-
-12 <Multiple-Data-Displacement> [sourceID startSourceBank# startSourceCell# endSourceBank# : endSourceCell# destinationID destinationBank# destinationCell# dataType]
-{12 12 123 123 123 : 12 123 12 123 123 1} ; {1212123123123 : 12123121231231}<13 : 14>
-(Moves multiple data to specified destination)
+### `2^53^ or 9 007 199 254 740 992`
