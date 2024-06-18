@@ -240,7 +240,7 @@ Any number higher than this requires a register or memory address which will be 
 Flow control operations control how the data processing flows. This section is here to explain each functions in `Flow control`
 
 - Jump (3 01)\
- A function that **jumps a `value2`** ammount of lines **if `value1` is true**. example syntax:
+ A function that **jumps a `value2`** ammount of lines **if `value1` is true**. Example syntax:
 
      ```3 01 4 1 00055 00002``` or ```30141000550002```
 
@@ -249,7 +249,7 @@ Flow control operations control how the data processing flows. This section is h
 - While (3 02)\
   A While loop function. We decided a for loop is unecessary since it can be achieved with only a while loop.
 
-    **Loops a `value2` ammount of lines if `value1` is still true**. example syntax:
+    **Loops a `value2` ammount of lines if `value1` is still true**. Example syntax:
 
     ```3 02 4 1 00102 00005``` or ```30241001020005```
 
@@ -258,7 +258,7 @@ Flow control operations control how the data processing flows. This section is h
     **The system will not be able to detect infinite loops, so you must terminate the task to stop it.**
 
 - Call (3 03)\
-  Calls a preloaded subroutine with a subroutine ID (`value1`) that is just a regular number, so you can use the data type of regular number for this. example syntax:
+  Calls a preloaded subroutine with a subroutine ID (`value1`) that is just a regular number, so you can use the data type of regular number for this. Example syntax:
 
   ```3 03 1 1 00005 00000``` or ```303110000500000```
 
@@ -270,15 +270,32 @@ Flow control operations control how the data processing flows. This section is h
 
 ## Data control (4)
 Data control operations control data positioning over several devices.
+- Data start (4 00)
+  Starting line of some data, Must be placed on the start of every data. `value1` and `value2` can and will be used as identifiers for this specific data. if another data has the same identifier. the older one is eradicated.
+
 - Load (4 01)
-  Loads data from a disk ID (`value1`) to a memory ID (`value2`), therefore you must use the data type of `0`. example syntax:
+  Loads data from a disk ID (`value1`) to a memory ID (`value2`), therefore you must use the data type of `0`. Example syntax:
 
   ```4 01 0 1 04124 00205``` or ```401010412400205```
   
   The code above loads a data from diskID #`4124` to memoryID #`205`
 
-- End (4 99)\
-  End line for data, must be placed at the end of data line, **otherwise, the system will not be able to detect if the data line ended.**
+- Move (4 02)
+  A function to move data between Registers and Memory(RAM). this function depends on the data type as it moves data from the ID of `value1` to the ID of `value2`. Example syntax:
+
+  ```4 02 5 1 00520 00200``` or ```402510052000200```
+
+  The code above has the data type of `value1` and `value2` to be register ID's, therefore moving data between registers, or in this example moving data from register #`520` to register #`200`.
+
+- Load Subroutine (4 03)
+  Loads a regular script from a memory address and assigns it with an ID that can be called mid-code multiple times. `value1` will be noted as the memoryID of the subroutine. Example syntax:
+
+  ```4 03 7 05764 00000``` or ```40370576400000```
+
+  The code above assigns memoryID #`5764` a subroutine ID that can be called anytime during the main code run.
+
+- Data End (4 99)\
+  End line for data, must be placed at the end of data line. `value1` and `value2` can and will be used as identifiers combined with the data start identifier creating a 20-digit long unique identifier for this specific data. **otherwise, the system will not be able to detect if the data line ended.**
 
 ## Registers and Memory addresses
 ### 1. Registers
@@ -303,11 +320,18 @@ Memory in this context is the **RAM**. with this ID, the CPU will send a request
 
 
 ## Subroutines
-Subroutines are basically custom functions that supports the `DRY` programming rule, `Don't Repeat Yourself`. Subroutines have the same structure as a regular scipt, but loaded as a subroutine.
+Subroutines are basically custom functions that supports the `DRY` programming rule, `Don't Repeat Yourself`.
+
+Subroutines have the same structure as a regular scipt, but loaded as a subroutine.
 
 
 ## Exceptions
 Exceptions will occur when certain conditions did not went as expected. the procedure of an exception will be stopping current running program completely by rejecting every code inputted until an end block.
+- Unknown error (00)
+- Task killed (01)
+- Syntax error (02)
+- Subroutine is not detected or not preloaded (03)
+- No return line in subroutine (04)
 
 ## Data structure
 Every data will begin with ```4 00 0 0 00000 00000``` and end with ```4 99 0 0 00000 00000``` this is to make data storage easier.
