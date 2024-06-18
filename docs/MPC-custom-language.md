@@ -133,17 +133,17 @@ Current latest interpreted code formatting:
              19 : Arc-sine              [ asin(value1) ]
              20 : Arc-cosine            [ acos(value1) ]
              21 : Arc-tangent           [ atan(value1) ]
-             22 : Cosecant              [ 1 / sin(value1) ]
-             23 : Secant                [ 1 / cos(value1) ]
-             24 : Cotangent             [ 1 / tan(value1) ]
-             25 : Arc-cosecant          [ asin( 1 / value1 ) ]
-             26 : Arc-secant            [ acos( 1 / value1 ) ]
-             27 : Arc-cotangent         [ atan( 1 / value1 ) ]
-             28 : Angle of 2 vectors    [ arc-cos( (value1 x value2) / (abs(value1) x abs(value2)) ) ]
-             29 : Distance of 2 vectors [ abs( value1 - value2 )  ]
-             30 : length of vector      [ abs(sqrt( value1 ^ 2 + value2 ^ 2 )) ]
-             31 : 2D simplex noise, function from mindustry
-             32 : Random number, function from mindustry (doubtfully practical)
+             22 : Angle of 2 vectors    [ arc-cos( (value1 x value2) / (abs(value1) x abs(value2)) ) ]
+             23 : Distance of 2 vectors [ abs( value1 - value2 )  ]
+             24 : length of vector      [ abs(sqrt( value1 ^ 2 + value2 ^ 2 )) ]
+             25 : 2D simplex noise,      function from mindustry
+             26 : Random number,         function from mindustry (doubtfully practical)
+             27 : Cosecant              [ 1 / sin(value1) ]
+             28 : Secant                [ 1 / cos(value1) ]
+             29 : Cotangent             [ 1 / tan(value1) ]
+             30 : Arc-cosecant          [ asin( 1 / value1 ) ]
+             31 : Arc-secant            [ acos( 1 / value1 ) ]
+             32 : Arc-cotangent         [ atan( 1 / value1 ) ]
 
 2 : Logical operations
     01 : EqualTo            [value1 == value2]
@@ -181,9 +181,10 @@ Current latest interpreted code formatting:
 9 : Exception Error
     00 : unknown error, better check every part.
     01 : Kill task (killed a program by request)
-    02 : Syntax error (string length is not 15)
+    02 : Syntax error
     03 : Subroutine is not detected or not preloaded
     04 : No exit on subroutine (No return block passed in subroutine)
+    05 : Invalid data type
 ```
 
 ### 2. Data type of values
