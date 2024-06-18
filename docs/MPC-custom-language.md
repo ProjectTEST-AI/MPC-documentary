@@ -173,7 +173,7 @@ this value represents what type of data the value that's being processed has. if
 ```
 
 ### 3. Positive/Negative properties of the values
-Self explanatory.
+Values that is specified to be negative will be multiplied by -1 to when calculated.
 ```
  1 = value1 positive, value2 positive
  2 = value1 negative, value2 positive
