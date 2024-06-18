@@ -57,6 +57,7 @@ After some thinking, we thought of values higher than the `99999` limit, because
 > - 7 = value1 is a memory ID, value2 is a normal number
 > - 8 = value1 is a memory ID, value2 is a register ID
 > - 9 = value1 is a memory ID, value2 is also a memory ID
+> - 0 = value1is a disk ID, value2 is a memory ID
 
 **Fourth and fifth digits** `999999` same as before, theese numbers are the values to be processed.
 
@@ -90,7 +91,7 @@ With the problem in hand, we decided to let go of the commas, because there is n
 Current latest interpreted code formatting:
 ### ```1 12 3 4 99999 99999```
 
-`10` : opCodes (Operation Codes). Refrence numbers for the general type of operation.
+`1` : opCodes (Operation Codes). Refrence numbers for the general type of operation.
 
 `12` : sub-opCodes (sub Operation Codes). Reference numbers for the specific type of operation within the opCode.
 
@@ -110,36 +111,79 @@ Current latest interpreted code formatting:
 **sub-opCodes** are the **specific functions** or type of operation within a group of generalized functions (opCodes).
 ```
 (opCode) 1 : Mathematical operations
-(sub-opCode) 01 : Addition
-             02 : Subtraction
-             03 : Multiplication
-             04 : Division
-             05 : Int Division (outputs interger, throwing numbers behind comma)
-             05 : Modulo
-             06 : Power (value1 ^ value2)
-             07 : Exponent to the e (value1 ^ e)
-             08 : base-10 logarithm (value 1)
-             09 : logarithm (value1 = base, value2 = anti-logarithm) = ( Log value1(value2) )
-             10 : Maximum of two values
-             11 : Minimum of two values
+(sub-opCode) 01 : Addition              [value1 + value2]
+             02 : Subtraction           [value1 - value2]
+             03 : Multiplication        [value1 * value2]
+             04 : Division              [value1 / value2]  
+             05 : Int Division          [value1 // value2] (outputs interger only)
+             05 : Modulo                [value1 % value2]
+             06 : Power                 [value1 ^ value2]
+             07 : Exponent to the e     [value1 ^ e]
+             08 : Base-10 logarithm     [ log 10 (value 1) ]
+             09 : Natural logarithm     [ log e (value 1) ]
+             10 : Square root           [ sqrt(value1) ]
+             11 : Maximum of two values [ max(value1) ]
+             12 : Minimum of two values [ min(value1) ]
+             13 : Floor                 [ floor(value1) ]
+             14 : Ceiling               [ ceil(value1) ]
+             15 : Absolute value        [ abs(value1) ]
+             16 : Sine                  [ sin(value1) ]
+             17 : Cosine                [ cos(value1) ]
+             18 : Tangent               [ tan(value1) ]
+             19 : Arc-sine              [ asin(value1) ]
+             20 : Arc-cosine            [ acos(value1) ]
+             21 : Arc-tangent           [ atan(value1) ]
+             22 : Cosecant              [ 1 / sin(value1) ]
+             23 : Secant                [ 1 / cos(value1) ]
+             24 : Cotangent             [ 1 / tan(value1) ]
+             25 : Arc-cosecant          [ asin( 1 / value1 ) ]
+             26 : Arc-secant            [ acos( 1 / value1 ) ]
+             27 : Arc-cotangent         [ atan( 1 / value1 ) ]
+             28 : Angle of 2 vectors    [ arc-cos( (value1 x value2) / (abs(value1) x abs(value2)) ) ]
+             29 : Distance of 2 vectors [ abs( value1 - value2 )  ]
+             30 : length of vector      [ abs(sqrt( value1 ^ 2 + value2 ^ 2 )) ]
+             31 : 2D simplex noise, function from mindustry
+             32 : Random number, function from mindustry (doubtfully practical)
 
 2 : Logical operations
-    01 :
-    02 :
-    03 :
-    04 :
-    05 :
-    06 :
+    01 : EqualTo            [value1 == value2]
+    02 : NotEqual           [value1 != value2]
+    03 : logical And        [value1 & value2]
+    04 : LessThan           [value1 < value2]
+    05 : LessOrEqualThan    [value1 <= value2]
+    06 : MoreThan           [value1 > value2]
+    07 : MoreOrEqualThan    [value1 >= value2]
+    08 : StrictEqual        [value1 === value2]
+    09 : Bitwise-OR         [value1 || value2]
+    10 : Bitwise-AND        [value1 && value2]
+    11 : Bitwise-XOR        [value1 ^^ value2]
+    12 : Bitwise-Flip       [ flip(value1) ]
+    13 : Bitshift-Left      [value1 << value2]
+    14 : Bitshift-Right     [value1 >> value2]
 
 3 : Flow control
+    01 : Jump
+    02 : While
+    03 : Call
+    04 : Return
 
 4 : Data control
+    00 : Data start
+    01 : Load
+    02 : Move [Moves data either Reg to Mem or Mem to Reg, dataSourceID = value1, dataDestinationID = value2]
+    03 : Load Subroutine
+    99 : End
 
-5 :  
-6 : 
-7 : 
-8 : 
-9 : 
+5 : None yet
+6 : None yet
+7 : None yet
+8 : None yet
+9 : Exception Error
+    00 : unknown error, better check every part.
+    01 : Kill task (killed a program by request)
+    02 : Syntax error (string length is not 15)
+    03 : Subroutine is not detected or not preloaded
+    04 : No exit on subroutine (No return block passed in subroutine)
 ```
 
 ### 2. Data type of values
@@ -170,25 +214,73 @@ this value represents what type of data the value that's being processed has. if
   3 = value2 is a memory ID, value 1 is a regular number/value
   6 = value2 is a memory ID, value 1 is a register ID
   9 = value2 is a memory ID, value 1 is a memory ID
+
+  0 = value1 is a disk ID, value2 is a memory ID
 ```
 
 ### 3. Positive/Negative properties of the values
-Values that is specified to be negative will be multiplied by -1 to when calculated.
+Values that is specified to be negative will be **multiplied by -1** when calculated.
 ```
  1 = value1 positive, value2 positive
  2 = value1 negative, value2 positive
  3 = value1 positive, value2 negative
  4 = value1 negative, value2 negative
- any numbers above will return **1**
+ any other number will return **1**
 ```
 
 ### 4. Value(s) being processed
-the first value is generally called V1 or value1 and the second value can be called V2 or value2.
+The first value is generally called V1 or value1 and the second value can be called V2 or value2.
 
-the range of the value extends from 00000 to 99999. any number higher than this requires a register or memory address which will be explained next.
+The range of the value extends from 00000 to 99999. Negative numbers can be achieved by the positive/negative value property or by register or memory address.
+
+Any number higher than this requires a register or memory address which will be explained next.
 
 
-## Register and Memory addresses
+## Flow control (3)
+Flow control operations control how the data processing flows. This section is here to explain each functions in `Flow control`
+
+- Jump (3 01)\
+ A function that **jumps a `value2`** ammount of lines **if `value1` is true**. example syntax:
+
+     ```3 01 4 1 00055 00002``` or ```30141000550002```
+
+     The code above states if the value on register #`55` is 1, the processor will jump `2` lines after this line.
+
+- While (3 02)\
+  A While loop function. We decided a for loop is unecessary since it can be achieved with only a while loop.
+
+    **Loops a `value2` ammount of lines if `value1` is still true**. example syntax:
+
+    ```3 02 4 1 00102 00005``` or ```30241001020005```
+
+    The code above states that if the value on register #`102` is 1, it will run the next `5` lines of code and then checks again if register #`102` is still true, if it is then it will run it until the checked condition is false. 
+    
+    **The system will not be able to detect infinite loops, so you must terminate the task to stop it.**
+
+- Call (3 03)\
+  Calls a preloaded subroutine with a subroutine ID (`value1`) that is just a regular number, so you can use the data type of regular number for this. example syntax:
+
+  ```3 03 1 1 00005 00000``` or ```303110000500000```
+
+  The code above states to call a subroutine with an ID of #`5`.
+
+- Return (3 04)\
+  A return line from the subroutine, must be placed on the end of a subroutine code.
+
+
+## Data control (4)
+Data control operations control data positioning over several devices.
+- Load (4 01)
+  Loads data from a disk ID (`value1`) to a memory ID (`value2`), therefore you must use the data type of `0`. example syntax:
+
+  ```4 01 0 1 04124 00205``` or ```401010412400205```
+  
+  The code above loads a data from diskID #`4124` to memoryID #`205`
+
+- End (4 99)\
+  End line for data, must be placed at the end of data line, **otherwise, the system will not be able to detect if the data line ended.**
+
+## Registers and Memory addresses
 ### 1. Registers
 Registers are small memory points that is placed in the CPU core. You might think of L1, L2, or L3 caches but **Caches and Registers are different!**
 
@@ -210,6 +302,19 @@ Memory in this context is the **RAM**. with this ID, the CPU will send a request
 **Currently, we have not decided on the numbers to access the memory yet.**
 
 
-## Next thing here
+## Subroutines
+Subroutines are basically custom functions that supports the `DRY` programming rule, `Don't Repeat Yourself`. Subroutines have the same structure as a regular scipt, but loaded as a subroutine.
 
+
+## Exceptions
+Exceptions will occur when certain conditions did not went as expected. the procedure of an exception will be stopping current running program completely by rejecting every code inputted until an end block.
+
+## Data structure
+Every data will begin with ```4 00 0 0 00000 00000``` and end with ```4 99 0 0 00000 00000``` this is to make data storage easier.
+
+the data start line and the data end line values can be used as ID's for easier identification of the data.
+
+Information lines are another story... uuugh
+
+#
 ###### Many thanks to everyone involved.
