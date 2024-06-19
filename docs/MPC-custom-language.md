@@ -38,7 +38,7 @@ With all that done, all that's left is to assign opCodes and sub-opCodes and **c
 
 
 #
-## 3. Revision #1
+## 3. Realization
 After some thinking, we thought of values higher than the `99999` limit, because admittedly it was small. So we planned of using registers and memory address to make up for it. with the plan above we eventually end up with this formatting:
 
 ```10 12 1 99999 99999```
@@ -47,7 +47,7 @@ After some thinking, we thought of values higher than the `99999` limit, because
 
 **Second digits** `12` same as before but one digit less, **sub-opCodes**. indicates the specific type of operation such as in the general type of **math operation**, the sub-opCodes will have **addition, subtraction, division, multiplication, etc.**
 
-**Third digit** `1` This one digit value represents the **data types of the values within the line**.
+**Third digit** `1` This one digit value represents the **datatypes of the values within the line**.
 > - 1 = value1 is a regular number, value2 is also a regular number
 > - 2 = value1 is a regular number, value2 is a register ID
 > - 3 = value1 is a regular number, value2 is a memory ID
@@ -57,13 +57,13 @@ After some thinking, we thought of values higher than the `99999` limit, because
 > - 7 = value1 is a memory ID, value2 is a normal number
 > - 8 = value1 is a memory ID, value2 is a register ID
 > - 9 = value1 is a memory ID, value2 is also a memory ID
-> - 0 = value1is a disk ID, value2 is a memory ID
+> - 0 = value1 is a disk ID, value2 is a memory ID
 
 **Fourth and fifth digits** `999999` same as before, theese numbers are the values to be processed.
 
 
 #
-## 4. Revision #2
+## 4. Another forgotten thing
 Totally forgot about two things, that is the positive or negative state of a value, and numbers behind commas. If the value was in a memory cell, it would have no problem differentiating between negative nor positive. But within one line of code, we currently cannot differentiate between negative and positive numbers and don't get us started with commas.
 
 With the problem in hand, we decided to let go of the commas, because there is no efficient way to make that work. And to solve the positive/negative number problem we *(again)* redesigned the interpreted code format to be:
@@ -74,7 +74,7 @@ With the problem in hand, we decided to let go of the commas, because there is n
 
 **Second digits** `12` same as before, **sub-opCodes**. indicates the specific type of operation such as in the general type of **math operation**, the sub-opCodes will have **addition, subtraction, division, multiplication, etc.**
 
-**Third digit** `3` same as before, represents data types of the values on hand.
+**Third digit** `3` same as before, represents datatypes of the values on hand.
 
 **Fourth digit** `4` This one digit value represents the positive/negative status of the values on hand.
 > - 1 = value1 positive, value2 positive
@@ -84,24 +84,42 @@ With the problem in hand, we decided to let go of the commas, because there is n
 > - any numbers above will return **1**.
 
 **Fifth and sixth digits** `999999` same as before, theese numbers are the values to be processed.
+
+#
+## 5. Redesign
+Before, we were thinking that the result of an equation can be overwritten on `value1` when available. Realizing it would be just easier to add a third value for the output variable, we want to move things around now. Since we want to add another value to the current formatting, we decided to tap into the 16th digit since the first digit (opCode) will not go over the limit of 9 quadrilion, since the practical opCodes ranges from 1 to 8, therefore not exceeding the limit. The newly designed code format:
+
+```1 12 34 9999 9999 999```
+
+**First digits** `1` same as before but one digit less, **opCodes**. indicates the general type of operation such as **Math operation, Data transfer, Flow control, etc.**
+
+**Second digits** `12` same as before, **sub-opCodes**. indicates the specific type of operation such as in the general type of **math operation**, the sub-opCodes will have **addition, subtraction, division, multiplication, etc.**
+
+**Third digit** `34` This two digit value represents the datatypes of all values AND `value1` / `value2` properties (negative/positive). This will be thoroughly described in the Actual documentation part.
+
+**Fourth and fifth digits** `999999` same as before, theese numbers are the values to be processed.
+
+**Sixth digit** `999` This three digit value represents either a Register address or a Memory address as the target of the code line's output.
+
+
 #
 #
 #
 # Actual documentation (Skipping story)
 Current latest interpreted code formatting:
-### ```1 12 3 4 99999 99999```
+### ```1 12 34 9999 9999 999``` or ```1123499999999999```
 
-`1` : opCodes (Operation Codes). Refrence numbers for the general type of operation.
+`1` : **opCodes** (Operation Codes). Refrence numbers for the **general** type of operation.
 
-`12` : sub-opCodes (sub Operation Codes). Reference numbers for the specific type of operation within the opCode.
+`12` : **sub-opCodes** (sub Operation Codes). Reference numbers for the **specific** type of operation within the opCode.
 
-`3` : data type of values being processed.
+`34` : **Datatype** of values being processed and **positive/negative property** of the values (`value1` or `value2`) being processed.
 
-`4` : positive/negative status of values being processed.
+`9999` : **Primary value** to be processed.
 
-`99999` : Value that will be processed.
+`9999` : **Secondary value** to be processed.
 
-### The processed value will be stored within the address of value1 or if none, Defaults and/or overwrites on register #0
+`999` : **Register or Memory address target for line's output.**
 
 ## Explanation for the interpreted code formatting
 
@@ -136,8 +154,8 @@ Current latest interpreted code formatting:
              22 : Angle of 2 vectors    [ arc-cos( (value1 x value2) / (abs(value1) x abs(value2)) ) ]
              23 : Distance of 2 vectors [ abs( value1 - value2 )  ]
              24 : length of vector      [ abs(sqrt( value1 ^ 2 + value2 ^ 2 )) ]
-             25 : 2D simplex noise,      function from mindustry
-             26 : Random number,         function from mindustry (doubtfully practical)
+             25 : 2D simplex noise      Function from mindustry
+             26 : Random number         Function from mindustry (doubtfully practical)
              27 : Cosecant              [ 1 / sin(value1) ]
              28 : Secant                [ 1 / cos(value1) ]
              29 : Cotangent             [ 1 / tan(value1) ]
@@ -163,76 +181,115 @@ Current latest interpreted code formatting:
 
 3 : Flow control
     01 : Jump
-    02 : While
+    02 : While (loop)
     03 : Call
     04 : Return
 
 4 : Data control
     00 : Data start
-    01 : Load
-    02 : Move [Moves data either Reg to Mem or Mem to Reg, dataSourceID = value1, dataDestinationID = value2]
-    03 : Load Subroutine
+    01 : Save
+    02 : Load
+    03 : Move
+    04 : Set
+    05 : Load Subroutine
+    06 : Unload Subroutine
     99 : End
 
 5 : None yet
 6 : None yet
 7 : None yet
 8 : None yet
+
 9 : Exception Error
     00 : unknown error, better check every part.
     01 : Kill task (killed a program by request)
-    02 : Syntax error
+    02 : Syntax error (find it, the code can't find it for you)
     03 : Subroutine is not detected or not preloaded
     04 : No exit on subroutine (No return block passed in subroutine)
-    05 : Invalid data type
+    05 : Invalid datatype
 ```
 
-### 2. Data type of values
-this value represents what type of data the value that's being processed has. if one value is unused, then the data type of that value will be ignored and/or skipped.
+### 2. Datatype of values and their (Positive/negative) properties.
+This value is a combination of two use cases, Datatype value and `value1` and `value2`'s positive/negative properties. This is to save the ammounts of digits to be used on the compiled code formatting. The comprehensive list of values are listed below, **We HIGHLY suggest using the search function to search for the right value.**
 ```
-  1 = value1 is a regular number/value, value2 is also a regular number/value
-  2 = value1 is a regular number/value, value2 is a register ID
-  3 = value1 is a regular number/value, value2 is a memory ID
-
-  4 = value1 is a register ID, value2 is a regular number/value
-  5 = value1 is a register ID, value2 is also a register ID
-  6 = value1 is a register ID, value2 is a memory ID
-
-  7 = value1 is a memory ID, value2 is a regular number/value
-  8 = value1 is a memory ID, value2 is a register ID
-  9 = value1 is a memory ID, value2 is also a memory ID
-
- or
-
-  1 = value2 is a regular number/value, value 1 is a regular number/value
-  4 = value2 is a regular number/value, value 1 is a register ID
-  7 = value2 is a regular number/value, value 1 is a memory ID
-
-  2 = value2 is a regular register ID, value 1 is a regular number/value
-  5 = value2 is a regular register ID, value 1 is a register ID
-  8 = value2 is a regular register ID, value 1 is a memory ID
-
-  3 = value2 is a memory ID, value 1 is a regular number/value
-  6 = value2 is a memory ID, value 1 is a register ID
-  9 = value2 is a memory ID, value 1 is a memory ID
-
-  0 = value1 is a disk ID, value2 is a memory ID
+1 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a positive number, value2 is a positive number
+2 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a positive number, value2 is a negative number
+3 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a negative number, value2 is a positive number
+4 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a negative number, value2 is a negative number
+5 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a positive number, value2 is a positive number
+6 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a positive number, value2 is a negative number
+7 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a negative number, value2 is a positive number
+8 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a negative number, value2 is a negative number
+9 = value1 is a normal value, value2 is a RegisterID, value3 is a RegisterID   | value1 is a positive number, value2 is a positive number
+10 = value1 is a normal value, value2 is a RegisterID, value3 is a RegisterID  | value1 is a positive number, value2 is a negative number
+11 = value1 is a normal value, value2 is a RegisterID, value3 is a RegisterID  | value1 is a negative number, value2 is a positive number
+12 = value1 is a normal value, value2 is a RegisterID, value3 is a RegisterID  | value1 is a negative number, value2 is a negative number
+13 = value1 is a normal value, value2 is a RegisterID, value3 is a MemoryID    | value1 is a positive number, value2 is a positive number
+14 = value1 is a normal value, value2 is a RegisterID, value3 is a MemoryID    | value1 is a positive number, value2 is a negative number
+15 = value1 is a normal value, value2 is a RegisterID, value3 is a MemoryID    | value1 is a negative number, value2 is a positive number
+16 = value1 is a normal value, value2 is a RegisterID, value3 is a MemoryID    | value1 is a negative number, value2 is a negative number
+17 = value1 is a normal value, value2 is a MemoryID, value3 is a RegisterID    | value1 is a positive number, value2 is a positive number
+18 = value1 is a normal value, value2 is a MemoryID, value3 is a RegisterID    | value1 is a positive number, value2 is a negative number
+19 = value1 is a normal value, value2 is a MemoryID, value3 is a RegisterID    | value1 is a negative number, value2 is a positive number
+20 = value1 is a normal value, value2 is a MemoryID, value3 is a RegisterID    | value1 is a negative number, value2 is a negative number
+21 = value1 is a normal value, value2 is a MemoryID, value3 is a MemoryID      | value1 is a positive number, value2 is a positive number
+22 = value1 is a normal value, value2 is a MemoryID, value3 is a MemoryID      | value1 is a positive number, value2 is a negative number
+23 = value1 is a normal value, value2 is a MemoryID, value3 is a MemoryID      | value1 is a negative number, value2 is a positive number
+24 = value1 is a normal value, value2 is a MemoryID, value3 is a MemoryID      | value1 is a negative number, value2 is a negative number
+25 = value1 is a RegisterID, value2 is a normal value, value3 is a RegisterID  | value1 is a positive number, value2 is a positive number
+26 = value1 is a RegisterID, value2 is a normal value, value3 is a RegisterID  | value1 is a positive number, value2 is a negative number
+27 = value1 is a RegisterID, value2 is a normal value, value3 is a RegisterID  | value1 is a negative number, value2 is a positive number
+28 = value1 is a RegisterID, value2 is a normal value, value3 is a RegisterID  | value1 is a negative number, value2 is a negative number
+29 = value1 is a RegisterID, value2 is a normal value, value3 is a MemoryID    | value1 is a positive number, value2 is a positive number
+30 = value1 is a RegisterID, value2 is a normal value, value3 is a MemoryID    | value1 is a positive number, value2 is a negative number
+31 = value1 is a RegisterID, value2 is a normal value, value3 is a MemoryID    | value1 is a negative number, value2 is a positive number
+32 = value1 is a RegisterID, value2 is a normal value, value3 is a MemoryID    | value1 is a negative number, value2 is a negative number
+33 = value1 is a RegisterID, value2 is a RegisterID, value3 is a RegisterID    | value1 is a positive number, value2 is a positive number
+34 = value1 is a RegisterID, value2 is a RegisterID, value3 is a RegisterID    | value1 is a positive number, value2 is a negative number
+35 = value1 is a RegisterID, value2 is a RegisterID, value3 is a RegisterID    | value1 is a negative number, value2 is a positive number
+36 = value1 is a RegisterID, value2 is a RegisterID, value3 is a RegisterID    | value1 is a negative number, value2 is a negative number
+37 = value1 is a RegisterID, value2 is a RegisterID, value3 is a MemoryID      | value1 is a positive number, value2 is a positive number
+38 = value1 is a RegisterID, value2 is a RegisterID, value3 is a MemoryID      | value1 is a positive number, value2 is a negative number
+39 = value1 is a RegisterID, value2 is a RegisterID, value3 is a MemoryID      | value1 is a negative number, value2 is a positive number
+40 = value1 is a RegisterID, value2 is a RegisterID, value3 is a MemoryID      | value1 is a negative number, value2 is a negative number
+41 = value1 is a RegisterID, value2 is a MemoryID, value3 is a RegisterID      | value1 is a positive number, value2 is a positive number
+42 = value1 is a RegisterID, value2 is a MemoryID, value3 is a RegisterID      | value1 is a positive number, value2 is a negative number
+43 = value1 is a RegisterID, value2 is a MemoryID, value3 is a RegisterID      | value1 is a negative number, value2 is a positive number
+44 = value1 is a RegisterID, value2 is a MemoryID, value3 is a RegisterID      | value1 is a negative number, value2 is a negative number
+45 = value1 is a RegisterID, value2 is a MemoryID, value3 is a MemoryID        | value1 is a positive number, value2 is a positive number
+46 = value1 is a RegisterID, value2 is a MemoryID, value3 is a MemoryID        | value1 is a positive number, value2 is a negative number
+47 = value1 is a RegisterID, value2 is a MemoryID, value3 is a MemoryID        | value1 is a negative number, value2 is a positive number
+48 = value1 is a RegisterID, value2 is a MemoryID, value3 is a MemoryID        | value1 is a negative number, value2 is a negative number
+49 = value1 is a MemoryID, value2 is a normal value, value3 is a RegisterID    | value1 is a positive number, value2 is a positive number
+50 = value1 is a MemoryID, value2 is a normal value, value3 is a RegisterID    | value1 is a positive number, value2 is a negative number
+51 = value1 is a MemoryID, value2 is a normal value, value3 is a RegisterID    | value1 is a negative number, value2 is a positive number
+52 = value1 is a MemoryID, value2 is a normal value, value3 is a RegisterID    | value1 is a negative number, value2 is a negative number
+53 = value1 is a MemoryID, value2 is a normal value, value3 is a MemoryID      | value1 is a positive number, value2 is a positive number
+54 = value1 is a MemoryID, value2 is a normal value, value3 is a MemoryID      | value1 is a positive number, value2 is a negative number
+55 = value1 is a MemoryID, value2 is a normal value, value3 is a MemoryID      | value1 is a negative number, value2 is a positive number
+56 = value1 is a MemoryID, value2 is a normal value, value3 is a MemoryID      | value1 is a negative number, value2 is a negative number
+57 = value1 is a MemoryID, value2 is a RegisterID, value3 is a RegisterID      | value1 is a positive number, value2 is a positive number
+58 = value1 is a MemoryID, value2 is a RegisterID, value3 is a RegisterID      | value1 is a positive number, value2 is a negative number
+59 = value1 is a MemoryID, value2 is a RegisterID, value3 is a RegisterID      | value1 is a negative number, value2 is a positive number
+60 = value1 is a MemoryID, value2 is a RegisterID, value3 is a RegisterID      | value1 is a negative number, value2 is a negative number
+61 = value1 is a MemoryID, value2 is a RegisterID, value3 is a MemoryID        | value1 is a positive number, value2 is a positive number
+62 = value1 is a MemoryID, value2 is a RegisterID, value3 is a MemoryID        | value1 is a positive number, value2 is a negative number
+63 = value1 is a MemoryID, value2 is a RegisterID, value3 is a MemoryID        | value1 is a negative number, value2 is a positive number
+64 = value1 is a MemoryID, value2 is a RegisterID, value3 is a MemoryID        | value1 is a negative number, value2 is a negative number
+65 = value1 is a MemoryID, value2 is a MemoryID, value3 is a RegisterID        | value1 is a positive number, value2 is a positive number
+66 = value1 is a MemoryID, value2 is a MemoryID, value3 is a RegisterID        | value1 is a positive number, value2 is a negative number
+67 = value1 is a MemoryID, value2 is a MemoryID, value3 is a RegisterID        | value1 is a negative number, value2 is a positive number
+68 = value1 is a MemoryID, value2 is a MemoryID, value3 is a RegisterID        | value1 is a negative number, value2 is a negative number
+69 = value1 is a MemoryID, value2 is a MemoryID, value3 is a MemoryID          | value1 is a positive number, value2 is a positive number
+70 = value1 is a MemoryID, value2 is a MemoryID, value3 is a MemoryID          | value1 is a positive number, value2 is a negative number
+71 = value1 is a MemoryID, value2 is a MemoryID, value3 is a MemoryID          | value1 is a negative number, value2 is a positive number
+72 = value1 is a MemoryID, value2 is a MemoryID, value3 is a MemoryID          | value1 is a negative number, value2 is a negative number
 ```
 
-### 3. Positive/Negative properties of the values
-Values that is specified to be negative will be **multiplied by -1** when calculated.
-```
- 1 = value1 positive, value2 positive
- 2 = value1 negative, value2 positive
- 3 = value1 positive, value2 negative
- 4 = value1 negative, value2 negative
- any other number will return **1**
-```
+### 3. Value(s) being processed
+The first value is generally called V1 or value1 and the second value can be generally called V2 or value2.
 
-### 4. Value(s) being processed
-The first value is generally called V1 or value1 and the second value can be called V2 or value2.
-
-The range of the value extends from 00000 to 99999. Negative numbers can be achieved by the positive/negative value property or by register or memory address.
+The range of the value extends **from 0000 to 9999**. Negative numbers can be achieved by the positive/negative value property or by putting the value inside a register or memory address.
 
 Any number higher than this requires a register or memory address which will be explained next.
 
@@ -240,62 +297,77 @@ Any number higher than this requires a register or memory address which will be 
 ## Flow control (3)
 Flow control operations control how the data processing flows. This section is here to explain each functions in `Flow control`
 
-- Jump (3 01)\
+- **Jump** (3 01)\
  A function that **jumps a `value2`** ammount of lines **if `value1` is true**. Example syntax:
 
-     ```3 01 4 1 00055 00002``` or ```30141000550002```
+     ```3 01 4 1 00055 00002``` or ```30141000550002``` #TODO - CHANGE EXAMPLE FORMATTING
 
      The code above states if the value on register #`55` is 1, the processor will jump `2` lines after this line.
 
-- While (3 02)\
+- **While** (3 02)\
   A While loop function. We decided a for loop is unecessary since it can be achieved with only a while loop.
 
     **Loops a `value2` ammount of lines if `value1` is still true**. Example syntax:
 
-    ```3 02 4 1 00102 00005``` or ```30241001020005```
+    ```3 02 4 1 00102 00005``` or ```30241001020005``` #TODO - CHANGE EXAMPLE FORMATTING
 
     The code above states that if the value on register #`102` is 1, it will run the next `5` lines of code and then checks again if register #`102` is still true, if it is then it will run it until the checked condition is false. 
     
     **The system will not be able to detect infinite loops, so you must terminate the task to stop it.**
 
-- Call (3 03)\
-  Calls a preloaded subroutine with a subroutine ID (`value1`) that is just a regular number, so you can use the data type of regular number for this. Example syntax:
+- **Call** (3 03)\
+  Calls a preloaded subroutine with a subroutine ID (`value1`) that is just a regular number, so you can use the datatype of regular number for this. Example syntax:
 
-  ```3 03 1 1 00005 00000``` or ```303110000500000```
+  ```3 03 1 1 00005 00000``` or ```303110000500000``` #TODO - CHANGE EXAMPLE FORMATTING
 
   The code above states to call a subroutine with an ID of #`5`.
 
-- Return (3 04)\
+- **Return** (3 04)\
   A return line from the subroutine, must be placed on the end of a subroutine code.
 
 
 ## Data control (4)
 Data control operations control data positioning over several devices.
-- Data start (4 00)
+- **Data start** (4 00)\
   Starting line of some data, Must be placed on the start of every data. `value1` and `value2` can and will be used as identifiers for this specific data. if another data has the same identifier. the older one is eradicated.
 
-- Load (4 01)
-  Loads data from a disk ID (`value1`) to a memory ID (`value2`), therefore you must use the data type of `0`. Example syntax:
+- **Save** (4 01)\
+  Saves data to a diskID (`value2`) from a specified memoryID or registryID (`value1`). Example syntax:
 
-  ```4 01 0 1 04124 00205``` or ```401010412400205```
+  ```4 01 ``` or ```401```
+
+- **Load** (4 02)\
+  Loads data from a diskID (`value1`) to a memoryID (`value2`), therefore you must use the datatype of `0`. Example syntax:
+
+  ```4 02 0 1 04124 00205``` or ```402010412400205``` #TODO - CHANGE EXAMPLE FORMATTING
   
   The code above loads a data from diskID #`4124` to memoryID #`205`
 
-- Move (4 02)
-  A function to move data between Registers and Memory(RAM). this function depends on the data type as it moves data from the ID of `value1` to the ID of `value2`. Example syntax:
+- **Move** (4 03)\
+  A function to move data between Registers and Memory(RAM). this function depends on the datatype as it moves data from the ID of `value1` to the ID of `value2`. Example syntax:
 
-  ```4 02 5 1 00520 00200``` or ```402510052000200```
+  ```4 03 5 1 00520 00200``` or ```403510052000200``` #TODO - CHANGE EXAMPLE FORMATTING
 
-  The code above has the data type of `value1` and `value2` to be register ID's, therefore moving data between registers, or in this example moving data from register #`520` to register #`200`.
+  The code above has the datatype of `value1` and `value2` to be register ID's, therefore moving data between registers, or in this example moving data from register #`520` to register #`200`.
 
-- Load Subroutine (4 03)
+- **Set** (4 04)\
+  Sets a value (`value1`) to either a Register or Memory address (`value2`). Example syntax: 
+
+  ```4 04 09 0069 0254 000``` or ```4040900690254000```
+
+  The code above sets the value of register #`254` to `69`. (`value3` is unused since this does not output anything.)
+
+- **Load Subroutine** (4 05)\
   Loads a regular script from a memory address and assigns it with an ID that can be called mid-code multiple times. `value1` will be noted as the memoryID of the subroutine. Example syntax:
 
-  ```4 03 7 05764 00000``` or ```40370576400000```
+  ```4 05 7 05764 00000``` or ```40570576400000``` #TODO - CHANGE EXAMPLE FORMATTING
 
   The code above assigns memoryID #`5764` a subroutine ID that can be called anytime during the main code run.
 
-- Data End (4 99)\
+- **Unload Subroutine** (4 06)\
+  Unloads previously loaded subroutine to save register space. #TODO - EXAMPLE SYNTAX
+
+- **Data End** (4 99)\
   End line for data, must be placed at the end of data line. `value1` and `value2` can and will be used as identifiers combined with the data start identifier creating a 20-digit long unique identifier for this specific data. **otherwise, the system will not be able to detect if the data line ended.**
 
 ## Registers and Memory addresses
@@ -323,7 +395,7 @@ Memory in this context is the **RAM**. with this ID, the CPU will send a request
 ## Subroutines
 Subroutines are basically custom functions that supports the `DRY` programming rule, `Don't Repeat Yourself`.
 
-Subroutines have the same structure as a regular scipt, but loaded as a subroutine.
+Subroutines have the same structure as a regular scipt, but loaded as a subroutine. with the load subroutine function in Data control opCode.
 
 
 ## Exceptions
@@ -333,13 +405,14 @@ Exceptions will occur when certain conditions did not went as expected. the proc
 - Syntax error (02)
 - Subroutine is not detected or not preloaded (03)
 - No return line in subroutine (04)
+- Invalid datatype (05)
 
-## Data structure
+## Data structure #TODO - CHANGE EXAMPLE FORMATTING
 Every data will begin with ```4 00 0 0 00000 00000``` and end with ```4 99 0 0 00000 00000``` this is to make data storage easier.
 
 the data start line and the data end line values can be used as ID's for easier identification of the data.
 
-Information lines are another story... uuugh
+Information lines are another story... uuugh #TODO - CONTINUE THIS SHIT MAN DONT LEAVE IT
 
 #
 ###### Many thanks to everyone involved.
