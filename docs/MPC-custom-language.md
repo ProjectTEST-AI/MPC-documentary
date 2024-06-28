@@ -1,8 +1,12 @@
+#
+# MPC Custom language, nicknamed Mach-C (Mindustry Machine Code)
+#
 # MPC custom language documentation (Story section lmfao)
 The programming language for MPC does seem to be a huge roadblock but we have some concepts for now, code it later.
 
-What we are thinking is to have a programming language similar to the level of assembly where its highly oversimplified and few syntax available. This language will be interpreted as base-10 numbers that can be saved in a mindustry memory cell which opens for data transfer between processors.
+What we are thinking is to have a programming language similar to the level of assembly where its highly oversimplified and few syntax available. This language will be **interpreted as base-10 numbers** that can be saved in a mindustry memory cell which opens for data transfer between processors.
 
+#### (This documentation covers the `interpreted` code's structure and commands.)
 
 #
 ## 1. First impression :
@@ -106,6 +110,9 @@ Before, we were thinking that the result of an equation can be overwritten on `v
 #
 #
 # Actual documentation (Skipping story)
+
+#### (This documentation covers the `interpreted` code's structure and commands.)
+
 Current latest interpreted code formatting:
 ### ```1 12 34 9999 9999 999``` or ```1123499999999999```
 
