@@ -1,15 +1,15 @@
-#
-# MPC Custom language, nicknamed Mach-C (Mindustry Machine Code)
-#
+Project TEST presents
+> # MPC Custom language, nicknamed Mach-C (Mindustry Machine Code)
+
 # MPC custom language documentation (Story section lmfao)
 The programming language for MPC does seem to be a huge roadblock but we have some concepts for now, code it later.
 
 What we are thinking is to have a programming language similar to the level of assembly where its highly oversimplified and few syntax available. This language will be **interpreted as base-10 numbers** that can be saved in a mindustry memory cell which opens for data transfer between processors.
 
-#### (This documentation covers the `interpreted` code's structure and commands.)
+**(This documentation covers the `interpreted` code's structure and commands.)**
 
-#
-## 1. First impression :
+##
+### 1. First impression :
 We designed the first interpreted code: `10 100 65536 65536 65536 65536` (spaces is just for readability the real interpreted code does not have them)
 
 **The first digits** `10` indicates the general type of operation or **opCodes**, such as **Math operation, Data movement, etc.** which will group several commands together for easier reference. (this means we have a max of 89 opCodes). 
@@ -21,16 +21,15 @@ Another thing that is we have to start with a number higher than 0 because we ca
 
 After some testing we found out the mindustry memory cell has some limitations, where if you input a number so high it would **round up the numbers**. based on some testing, we have found the limit before rounding happens, that is:
 
-### 2<sup>53</sup> or `9 007 199 254 740 992`
+**2<sup>53</sup> or `9 007 199 254 740 992`**
 
 With this, we can redesign our format to fit the limitations.
 
-
-#
-## 2. Improvements! :
+##
+### 2. Improvements! :
 With the newfound info, we can conclude that our interpreted code has to fit within 15 digits (even though th elimit is 16 digits, just to be safe), and redesigned the interpreted code to be:
 
-### ```10 100 99999 99999``` (15 digits, no spaces in the actual interpreted code)
+**```10 100 99999 99999```** (15 digits, no spaces in the actual interpreted code)
 
 **First digits** `10` same as before, **opCodes**. indicates the general type of operation such as **Math operation, Data transfer, Flow control, etc.**
 
@@ -40,9 +39,8 @@ With the newfound info, we can conclude that our interpreted code has to fit wit
 
 With all that done, all that's left is to assign opCodes and sub-opCodes and **code it all!**
 
-
-#
-## 3. Realization
+##
+### 3. Realization
 After some thinking, we thought of values higher than the `99999` limit, because admittedly it was small. So we planned of using registers and memory address to make up for it. with the plan above we eventually end up with this formatting:
 
 ```10 12 1 99999 99999```
@@ -65,14 +63,13 @@ After some thinking, we thought of values higher than the `99999` limit, because
 
 **Fourth and fifth digits** `999999` same as before, theese numbers are the values to be processed.
 
-
-#
-## 4. Another forgotten thing
+##
+### 4. Another forgotten thing
 Totally forgot about two things, that is the positive or negative state of a value, and numbers behind commas. If the value was in a memory cell, it would have no problem differentiating between negative nor positive. But within one line of code, we currently cannot differentiate between negative and positive numbers and don't get us started with commas.
 
 With the problem in hand, we decided to let go of the commas, because there is no efficient way to make that work. And to solve the positive/negative number problem we *(again)* redesigned the interpreted code format to be:
 
-### ```1 12 3 4 99999 99999```
+**```1 12 3 4 99999 99999```**
 
 **First digits** `1` same as before but one digit less, **opCodes**. indicates the general type of operation such as **Math operation, Data transfer, Flow control, etc.**
 
@@ -89,8 +86,8 @@ With the problem in hand, we decided to let go of the commas, because there is n
 
 **Fifth and sixth digits** `999999` same as before, theese numbers are the values to be processed.
 
-#
-## 5. Redesign
+##
+### 5. Redesign
 Before, we were thinking that the result of an equation can be overwritten on `value1` when available. Realizing it would be just easier to add a third value for the output variable, we want to move things around now. Since we want to add another value to the current formatting, we decided to tap into the 16th digit since the first digit (opCode) will not go over the limit of 9 quadrilion, since the practical opCodes ranges from 1 to 8, therefore not exceeding the limit. The newly designed code format:
 
 ```1 12 34 9999 9999 999```
@@ -105,30 +102,28 @@ Before, we were thinking that the result of an equation can be overwritten on `v
 
 **Sixth digit** `999` This three digit value represents either a Register address or a Memory address as the target of the code line's output.
 
-
-#
-#
 #
 # Actual documentation (Skipping story)
 
-#### (This documentation covers the `interpreted` code's structure and commands.)
+**(This documentation covers the `interpreted` code's structure and commands.)**
 
 Current latest interpreted code formatting:
+
 ### ```1 12 34 9999 9999 999``` or ```1123499999999999```
 
-`1` : **opCodes** (Operation Codes). Refrence numbers for the **general** type of operation.
+`1` : [**opCodes**](#1-opcodes-and-their-respecting-sub-opcodes) (Operation Codes). Refrence numbers for the **general** type of operation.
 
-`12` : **sub-opCodes** (sub Operation Codes). Reference numbers for the **specific** type of operation within the opCode.
+`12` : [**sub-opCodes**](#1-opcodes-and-their-respecting-sub-opcodes) (sub Operation Codes). Reference numbers for the **specific** type of operation within the opCode.
 
-`34` : **Datatype** of values being processed and **positive/negative property** of the values (`value1` or `value2`) being processed.
+`34` : [**Datatype**](#2-datatype-of-values-and-their-positivenegative-properties) of values being processed and **positive/negative property** of the values (`value1` or `value2`) being processed.
 
-`9999` : **Primary value** to be processed.
+`9999` : [**Primary value**](#3-values-being-processed) to be processed.
 
-`9999` : **Secondary value** to be processed.
+`9999` : [**Secondary value**](#3-values-being-processed) to be processed.
 
-`999` : **Register or Memory address target for line's output.**
+`999` : [**Target output**](#4-target-output) of processed value.
 
-## Explanation for the interpreted code formatting
+## Further documentation to formatting
 
 ### 1. opCodes and their respecting sub-opCodes
 **opCodes** or Operator codes are a **generalized group of functions** or type of operation.
@@ -171,14 +166,14 @@ Current latest interpreted code formatting:
              32 : Arc-cotangent         [ atan( 1 / value1 ) ]
 
 2 : Logical operations
-    01 : EqualTo            [value1 == value2]
-    02 : NotEqual           [value1 != value2]
-    03 : logical And        [value1 & value2]
-    04 : LessThan           [value1 < value2]
-    05 : LessOrEqualThan    [value1 <= value2]
-    06 : MoreThan           [value1 > value2]
-    07 : MoreOrEqualThan    [value1 >= value2]
-    08 : StrictEqual        [value1 === value2]
+    01 : Equal-To           [value1 == value2]
+    02 : Not-Equal          [value1 != value2]
+    03 : logical-And        [value1 & value2]
+    04 : Less-Than          [value1 < value2]
+    05 : Less-Or-Equal-Than [value1 <= value2]
+    06 : More-Than          [value1 > value2]
+    07 : More-Or-Equal-Than [value1 >= value2]
+    08 : Strict-Equal       [value1 === value2]
     09 : Bitwise-OR         [value1 || value2]
     10 : Bitwise-AND        [value1 && value2]
     11 : Bitwise-XOR        [value1 ^^ value2]
@@ -208,14 +203,15 @@ Current latest interpreted code formatting:
 8 : None yet
 
 9 : Exception Error
-    00 : unknown error, better check every part.
-    01 : Kill task (killed a program by request)
-    02 : Syntax error (find it, the code can't find it for you)
-    03 : Subroutine is not detected or not preloaded
-    04 : No exit on subroutine (No return block passed in subroutine)
-    05 : Invalid datatype
+    01 : unknown error, better check every part.
+    02 : Kill task (killed a program by request)
+    03 : Syntax error (find it, the code can't find it for you)
+    04 : Subroutine is not detected or not preloaded
+    05 : No exit on subroutine (No return block passed in subroutine)
+    06 : Invalid datatype specified.
 ```
 
+##
 ### 2. Datatype of values and their (Positive/negative) properties.
 This value is a combination of two use cases, Datatype value and `value1` and `value2`'s positive/negative properties. This is to save the ammounts of digits to be used on the compiled code formatting. The comprehensive list of values are listed below, **We HIGHLY suggest using the search function to search for the right value.**
 ```
@@ -293,15 +289,24 @@ This value is a combination of two use cases, Datatype value and `value1` and `v
 72 = value1 is a MemoryID, value2 is a MemoryID, value3 is a MemoryID          | value1 is a negative number, value2 is a negative number
 ```
 
+##
 ### 3. Value(s) being processed
-The first value is generally called V1 or value1 and the second value can be generally called V2 or value2.
+Theese two values are the data that will be processed, sometimes one is used, and sometimes both are used. The first value is generally called V1 or value1 and the second value can be generally called V2 or value2.
 
 The range of the value extends **from 0000 to 9999**. Negative numbers can be achieved by the positive/negative value property or by putting the value inside a register or memory address.
 
-Any number higher than this requires a register or memory address which will be explained next.
+Any number higher than this requires a register or memory address which is explained [Here](#registers-and-memory-addresses).
 
+##
+### 4. Target output
+This value represents the output address of the processed value, this is where the processed value will be placed in.
 
-## Flow control (3)
+The datatype of this value is either a register address or a memory address.
+
+##
+## Further documentation to available functions
+
+### Flow control (3)
 Flow control operations control how the data processing flows. This section is here to explain each functions in `Flow control`
 
 - **Jump** (3 01)\
@@ -332,8 +337,8 @@ Flow control operations control how the data processing flows. This section is h
 - **Return** (3 04)\
   A return line from the subroutine, must be placed on the end of a subroutine code.
 
-
-## Data control (4)
+##
+### Data control (4)
 Data control operations control data positioning over several devices.
 - **Data start** (4 00)\
   Starting line of some data, Must be placed on the start of every data. `value1` and `value2` can and will be used as identifiers for this specific data. if another data has the same identifier. the older one is eradicated.
@@ -377,8 +382,9 @@ Data control operations control data positioning over several devices.
 - **Data End** (4 99)\
   End line for data, must be placed at the end of data line. `value1` and `value2` can and will be used as identifiers combined with the data start identifier creating a 20-digit long unique identifier for this specific data. **otherwise, the system will not be able to detect if the data line ended.**
 
-## Registers and Memory addresses
-### 1. Registers
+##
+### Registers and Memory addresses
+#### 1. Registers
 Registers are small memory points that is placed in the CPU core. You might think of L1, L2, or L3 caches but **Caches and Registers are different!**
 
 Caches are also small storages placed around the CPU. but in the context of this MPC, registers are variables in 1 single core, whilst caches are stored in small memory cells around it.
@@ -393,19 +399,19 @@ The register address in this context can access **both actual registers and cach
 
 **Currently, we have not decided on the numbers to access registers yet.**
 
-### 2. Memory Addresses
+#### 2. Memory Addresses
 Memory in this context is the **RAM**. with this ID, the CPU will send a request to the RAM and obtain the value within the memory address provided.
 
 **Currently, we have not decided on the numbers to access the memory yet.**
 
-
-## Subroutines
+##
+### Subroutines
 Subroutines are basically custom functions that supports the `DRY` programming rule, `Don't Repeat Yourself`.
 
 Subroutines have the same structure as a regular scipt, but loaded as a subroutine. with the load subroutine function in Data control opCode.
 
-
-## Exceptions
+##
+### Exceptions
 Exceptions will occur when certain conditions did not went as expected. the procedure of an exception will be stopping current running program completely by rejecting every code inputted until an end block.
 - Unknown error (00)
 - Task killed (01)
@@ -414,12 +420,9 @@ Exceptions will occur when certain conditions did not went as expected. the proc
 - No return line in subroutine (04)
 - Invalid datatype (05)
 
+##
 ## Data structure #TODO - CHANGE EXAMPLE FORMATTING
-Every data will begin with ```4 00 0 0 00000 00000``` and end with ```4 99 0 0 00000 00000``` this is to make data storage easier.
+Every "file" will begin with ```4 00 0 0 00000 00000``` and end with ```4 99 0 0 00000 00000``` this is to make identification easier.
 
-the data start line and the data end line values can be used as ID's for easier identification of the data.
-
-Information lines are another story... uuugh #TODO - CONTINUE THIS SHIT MAN DONT LEAVE IT
-
-#
-###### Many thanks to everyone involved.
+##
+###### Many thanks to everyone involved. - Sincerely, PT team.
