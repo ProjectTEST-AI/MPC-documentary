@@ -136,34 +136,34 @@ Current latest interpreted code formatting:
              03 : Multiplication        [value1 * value2]
              04 : Division              [value1 / value2]  
              05 : Int Division          [value1 // value2] (outputs interger only)
-             05 : Modulo                [value1 % value2]
-             06 : Power                 [value1 ^ value2]
-             07 : Exponent to the e     [value1 ^ e]
-             08 : Base-10 logarithm     [ log 10 (value 1) ]
-             09 : Natural logarithm     [ log e (value 1) ]
-             10 : Square root           [ sqrt(value1) ]
-             11 : Maximum of two values [ max(value1) ]
-             12 : Minimum of two values [ min(value1) ]
-             13 : Floor                 [ floor(value1) ]
-             14 : Ceiling               [ ceil(value1) ]
-             15 : Absolute value        [ abs(value1) ]
-             16 : Sine                  [ sin(value1) ]
-             17 : Cosine                [ cos(value1) ]
-             18 : Tangent               [ tan(value1) ]
-             19 : Arc-sine              [ asin(value1) ]
-             20 : Arc-cosine            [ acos(value1) ]
-             21 : Arc-tangent           [ atan(value1) ]
-             22 : Angle of 2 vectors    [ arc-cos( (value1 x value2) / (abs(value1) x abs(value2)) ) ]
-             23 : Distance of 2 vectors [ abs( value1 - value2 )  ]
-             24 : length of vector      [ abs(sqrt( value1 ^ 2 + value2 ^ 2 )) ]
-             25 : 2D simplex noise      Function from mindustry
-             26 : Random number         Function from mindustry (doubtfully practical)
-             27 : Cosecant              [ 1 / sin(value1) ]
-             28 : Secant                [ 1 / cos(value1) ]
-             29 : Cotangent             [ 1 / tan(value1) ]
-             30 : Arc-cosecant          [ asin( 1 / value1 ) ]
-             31 : Arc-secant            [ acos( 1 / value1 ) ]
-             32 : Arc-cotangent         [ atan( 1 / value1 ) ]
+             06 : Modulo                [value1 % value2]
+             07 : Power                 [value1 ^ value2]
+             08 : Exponent to the e     [value1 ^ e]
+             09 : Base-10 logarithm     [ log 10 (value 1) ]
+             10 : Natural logarithm     [ log e (value 1) ]
+             11 : Square root           [ sqrt(value1) ]
+             12 : Maximum of two values [ max(value1) ]
+             13 : Minimum of two values [ min(value1) ]
+             14 : Floor                 [ floor(value1) ]
+             15 : Ceiling               [ ceil(value1) ]
+             16 : Absolute value        [ abs(value1) ]
+             17 : Sine                  [ sin(value1) ]
+             18 : Cosine                [ cos(value1) ]
+             19 : Tangent               [ tan(value1) ]
+             20 : Arc-sine              [ asin(value1) ]
+             21 : Arc-cosine            [ acos(value1) ]
+             22 : Arc-tangent           [ atan(value1) ]
+             23 : Angle of 2 vectors    [ acos( (value1 x value2) / (abs(value1) x abs(value2)) ) ]
+             24 : Distance of 2 vectors [ abs( value1 - value2 )  ]
+             25 : length of vector      [ abs(sqrt( value1 ^ 2 + value2 ^ 2 )) ]
+             26 : 2D simplex noise      [ noise(value1, value2) ] (Function from mindustry)
+             27 : Random number         [ rand(0, value1) ] (doubtfully practical)
+             28 : Cosecant              [ 1 / sin(value1) ]
+             29 : Secant                [ 1 / cos(value1) ]
+             30 : Cotangent             [ 1 / tan(value1) ]
+             31 : Arc-cosecant          [ asin( 1 / value1 ) ]
+             32 : Arc-secant            [ acos( 1 / value1 ) ]
+             33 : Arc-cotangent         [ atan( 1 / value1 ) ]
 
 2 : Logical operations
     01 : Equal-To           [value1 == value2]
@@ -215,15 +215,15 @@ Current latest interpreted code formatting:
 ### 2. Datatype of values and their (Positive/negative) properties.
 This value is a combination of two use cases, Datatype value and `value1` and `value2`'s positive/negative properties. This is to save the ammounts of digits to be used on the compiled code formatting. The comprehensive list of values are listed below, **We HIGHLY suggest using the search function to search for the right value.**
 ```
-1 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a positive number, value2 is a positive number
-2 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a positive number, value2 is a negative number
-3 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a negative number, value2 is a positive number
-4 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a negative number, value2 is a negative number
-5 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a positive number, value2 is a positive number
-6 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a positive number, value2 is a negative number
-7 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a negative number, value2 is a positive number
-8 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a negative number, value2 is a negative number
-9 = value1 is a normal value, value2 is a RegisterID, value3 is a RegisterID   | value1 is a positive number, value2 is a positive number
+01 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a positive number, value2 is a positive number
+02 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a positive number, value2 is a negative number
+03 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a negative number, value2 is a positive number
+04 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a negative number, value2 is a negative number
+05 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a positive number, value2 is a positive number
+06 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a positive number, value2 is a negative number
+07 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a negative number, value2 is a positive number
+08 = value1 is a normal value, value2 is a normal value, value3 is a MemoryID   | value1 is a negative number, value2 is a negative number
+09 = value1 is a normal value, value2 is a RegisterID, value3 is a RegisterID   | value1 is a positive number, value2 is a positive number
 10 = value1 is a normal value, value2 is a RegisterID, value3 is a RegisterID  | value1 is a positive number, value2 is a negative number
 11 = value1 is a normal value, value2 is a RegisterID, value3 is a RegisterID  | value1 is a negative number, value2 is a positive number
 12 = value1 is a normal value, value2 is a RegisterID, value3 is a RegisterID  | value1 is a negative number, value2 is a negative number
