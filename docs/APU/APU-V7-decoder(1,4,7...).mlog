@@ -1,0 +1,529 @@
+jump firstLoopDone notEqual RUNNERUP 0
+set RUNNERUP 1
+set MLb -20
+set MLc 1
+
+firstLoopDone:
+jump noResetMainLoopCell lessThanEq MLc 511
+
+resetMainLoopCell:
+set MLc 1
+
+noResetMainLoopCell:
+read in bank1 MLc
+read ovr bank1 0
+jump override notEqual ovr 0
+jump resetMainLoopCell equal in 0
+write 0 bank1 MLc
+op add MLc MLc 3
+jump hopOverride always 0 0
+
+override:
+set in ovr
+write 0 bank1 0
+
+hopOverride:
+op idiv oc in 1000000000000000
+jump errorSyntax equal oc 0
+
+op mul heap oc 100
+op idiv sc in 10000000000000
+op sub sc sc heap
+jump errorSyntax equal sc 0
+
+op add heap heap sc
+op mul heap heap 100
+op idiv dt in 100000000000
+op sub dt dt heap
+jump errorDT equal dt 0
+jump errorDT greaterThan dt 72
+
+
+op add heap heap dt
+op mul heap heap 10000
+op idiv V1 in 10000000
+op sub V1 V1 heap
+
+op add heap heap V1
+op mul heap heap 10000
+op idiv V2 in 1000
+op sub V2 V2 heap
+
+op add heap heap V2
+op mul heap heap 1000
+op sub V3 in heap
+
+op mul Cjump dt 6
+op sub Cjump Cjump 6
+op add @counter @counter Cjump
+set V1t 1
+set V2t 1
+set V3t 1
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 1
+set V3t 1
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 1
+set V3t 1
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 1
+set V3t 1
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 1
+set V2t 2
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 1
+set V2t 2
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 1
+set V2t 2
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 1
+set V2t 2
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 2
+set V3t 1
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 2
+set V3t 1
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 2
+set V3t 1
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 2
+set V3t 1
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 2
+set V2t 2
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 2
+set V2t 2
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 2
+set V2t 2
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 2
+set V2t 2
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 3
+set V3t 1
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 3
+set V3t 1
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 3
+set V3t 1
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 3
+set V3t 1
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 3
+set V2t 2
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 3
+set V2t 2
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 1
+set V2t 3
+set V2t 2
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 1
+set V2t 3
+set V2t 2
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 1
+set V3t 1
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 1
+set V3t 1
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 1
+set V3t 1
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 1
+set V3t 1
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 1
+set V2t 2
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 1
+set V2t 2
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 1
+set V2t 2
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 1
+set V2t 2
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 2
+set V3t 1
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 2
+set V3t 1
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 2
+set V3t 1
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 2
+set V3t 1
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 2
+set V2t 2
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 2
+set V2t 2
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 2
+set V2t 2
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 2
+set V2t 2
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 3
+set V3t 1
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 3
+set V3t 1
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 3
+set V3t 1
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 3
+set V3t 1
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 3
+set V2t 2
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 3
+set V2t 2
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 2
+set V2t 3
+set V2t 2
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 2
+set V2t 3
+set V2t 2
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 1
+set V3t 1
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 1
+set V3t 1
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 1
+set V3t 1
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 1
+set V3t 1
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 1
+set V2t 2
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 1
+set V2t 2
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 1
+set V2t 2
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 1
+set V2t 2
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 2
+set V3t 1
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 2
+set V3t 1
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 2
+set V3t 1
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 2
+set V3t 1
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 2
+set V2t 2
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 2
+set V2t 2
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 2
+set V2t 2
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 2
+set V2t 2
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 3
+set V3t 1
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 3
+set V3t 1
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 3
+set V3t 1
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 3
+set V3t 1
+set V1p 2
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 3
+set V2t 2
+set V1p 1
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 3
+set V2t 2
+set V1p 1
+set V2p 2
+jump out always 0 0
+set V1t 3
+set V2t 3
+set V2t 2
+set V1p 2
+set V2p 1
+jump out always 0 0
+set V1t 3
+set V2t 3
+set V2t 2
+set V1p 2
+set V2p 2
+
+out:
+jump noResetMainLoopBank lessThan MLb 490
+set MLb -20
+
+noResetMainLoopBank:
+op add chCell MLb 29
+
+clearCheck:
+read check bank2 chCell
+jump clearCheck notEqual check 0
+
+op add MLb MLb 21
+write oc bank2 MLb
+op add MLb MLb 1
+write sc bank2 MLb
+op add MLb MLb 1
+write V1t bank2 MLb
+op add MLb MLb 1
+write V2t bank2 MLb
+op add MLb MLb 1
+write V3t bank2 MLb
+op add MLb MLb 1
+write V1p bank2 MLb
+op add MLb MLb 1
+write V2p bank2 MLb
+op add MLb MLb 1
+write V1 bank2 MLb
+op add MLb MLb 1
+write V2 bank2 MLb
+op add MLb MLb 1
+write V3 bank2 MLb
+end
+
+errorSyntax:
+write 903 bank2 0
+end
+
+errorDT:
+write 906 bank2 0

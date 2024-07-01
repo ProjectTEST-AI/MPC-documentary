@@ -1,0 +1,238 @@
+jump firstLoop equal RUNNERUP 0
+
+overrideScan:
+read override bank1 0
+jump reset equal override 1
+jump overrideScan notEqual override 0
+jump reset greaterThanEq cycle 500
+op add checkCell cycle 19
+
+commandCheck:
+read check bank1 checkCell
+jump commandCheck equal check 0
+
+op add cycle cycle 11
+read opCode bank1 cycle
+write 0 bank1 cycle
+
+op add cycle cycle 1
+read subCode bank1 cycle
+write 0 bank1 cycle
+
+op add cycle cycle 1
+read V1type bank1 cycle
+write 0 bank1 cycle
+
+op add cycle cycle 1
+read V2type bank1 cycle
+write 0 bank1 cycle
+
+op add cycle cycle 1
+read V3type bank1 cycle
+write 0 bank1 cycle
+
+op add cycle cycle 1
+read V1prop bank1 cycle
+write 0 bank1 cycle
+
+op add cycle cycle 1
+read V2prop bank1 cycle
+write 0 bank1 cycle
+
+op add cycle cycle 1
+read V1 bank1 cycle
+write 0 bank1 cycle
+
+op add cycle cycle 1
+read V2 bank1 cycle
+write 0 bank1 cycle
+
+op add cycle cycle 1
+read V3 bank1 cycle
+write 0 bank1 cycle
+
+op sub sync cycle 10
+syncAttempt:
+read otherMain cell1 1
+jump syncAttempt equal otherMain sync
+
+V1property:
+write cycle cell1 1
+jump V2property equal V1prop 1
+op mul V1 V1 -1
+V2property:
+jump oc1 equal V2prop 1
+op mul V2 V2 -1
+
+oc1:
+jump oc2 notEqual opCode 1
+jump csc greaterThanEq subCode 28
+op mul Cjump subCode 2
+op sub Cjump Cjump 2
+op add @counter @counter Cjump
+op add result V1 V2
+jump out always 0 0
+op sub result V1 V2
+jump out always 0 0
+op mul result V1 V2
+jump out always 0 0
+op div result V1 V2
+jump out always 0 0
+op idiv result V1 V2
+jump out always 0 0
+op mod result V1 V2
+jump out always 0 0
+op pow result V1 V2
+jump out always 0 0
+op pow result V1 @e
+jump out always 0 0
+op log10 result V1 V2
+jump out always 0 0
+op log result V1 V2
+jump out always 0 0
+op sqrt result V1 V2
+jump out always 0 0
+op max result V1 V2
+jump out always 0 0
+op min result V1 V2
+jump out always 0 0
+op floor result V1 V2
+jump out always 0 0
+op ceil result V1 V2
+jump out always 0 0
+op abs result V1 V2
+jump out always 0 0
+op sin result V1 V2
+jump out always 0 0
+op cos result V1 V2
+jump out always 0 0
+op tan result V1 V2
+jump out always 0 0
+op asin result V1 V2
+jump out always 0 0
+op acos result V1 V2
+jump out always 0 0
+op atan result V1 V2
+jump out always 0 0
+op angle result V1 V2
+jump out always 0 0
+op angleDiff result V1 V2
+jump out always 0 0
+op len result V1 V2
+jump out always 0 0
+op noise result V1 V2
+jump out always 0 0
+op rand result V1 V2
+jump out always 0 0
+
+csc:
+jump sec notEqual subCode 28
+op sin result V1 V2
+op div result 1 result
+jump out always 0 0
+
+sec:
+jump cot notEqual subCode 29
+op cos result V1 V2
+op div result 1 result
+jump out always 0 0
+
+cot:
+jump arcCsc notEqual subCode 30
+op tan result V1 V2
+op div result 1 result
+jump out always 0 0
+
+arcCsc:
+jump arcSec notEqual subCode 31
+op div result 1 V1
+op asin result result V2
+jump out always 0 0
+
+arcSec:
+jump arcCot notEqual subCode 32
+op div result 1 V1
+op acos result result V2
+jump out always 0 0
+
+arcCot:
+jump out notEqual subCode 33
+op div result 1 V1
+op atan result result V2
+jump out always 0 0
+
+oc2:
+jump oc3 notEqual opCode 2
+jump out always 0 0
+
+oc3:
+jump oc4 notEqual opCode 3
+jump out always 0 0
+
+oc4:
+jump oc5 notEqual opCode 4
+jump out always 0 0
+
+oc5:
+jump oc6 notEqual opCode 5
+jump out always 0 0
+
+oc6:
+jump oc7 notEqual opCode 6
+jump out always 0 0
+
+oc7:
+jump oc8 notEqual opCode 7
+jump out always 0 0
+
+oc8:
+jump oc9 notEqual opCode 8
+jump out always 0 0
+
+oc9:
+write subCode bank1 0
+
+out:
+jump memOut notEqual V3type 1
+op sub dest V3 1
+op idiv b dest 512
+op add b b 3
+op mod c dest 512
+getlink b b
+write result b c
+end
+
+memOut:
+op mul dest dest 1000
+jump memOutMoreThan9999 greaterThanEq result 9999
+op mul result result 10000000
+jump memOutnegative lessThan result 0
+op add result 4041700000000000 result
+op add result result dest
+write result bank2 0
+end
+
+memOutnegative:
+op add result 4041900000000000 result
+op add result result dest
+write result bank2 0
+end
+
+memOutMoreThan9999:
+jump memOutMoreThan9999negative lessThan result 0
+op add dest 4034100000000000 dest
+write dest bank2 0
+write result bank2 1
+end
+
+memOutMoreThan9999negative:
+op add dest 4034300000000000 dest
+write dest bank2 0
+write result bank2 1
+end
+
+firstLoop:
+set RUNNERUP 1
+
+reset:
+set cycle 0
