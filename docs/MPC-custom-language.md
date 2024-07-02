@@ -195,6 +195,8 @@ Current latest interpreted code formatting:
     04 : Set
     05 : Load Subroutine
     06 : Unload Subroutine
+    07 : Decode to V6Helper
+    08 : Decode to V7
     99 : End
 
 5 : None yet
@@ -365,7 +367,7 @@ Data control operations control data positioning over several devices.
 - **Set** (4 04)\
   Sets a value (`value1`) to either a Register or Memory address (`value2`). Example syntax: 
 
-  ```4 04 09 0069 0254 000``` or ```4040900690254000```
+  ```4 04 09 0069 0254 000``` or ```4040900690254000``` #TODO - CHANGE EXAMPLE FORMATTING
 
   The code above sets the value of register #`254` to `69`. (`value3` is unused since this does not output anything.)
 
@@ -378,6 +380,12 @@ Data control operations control data positioning over several devices.
 
 - **Unload Subroutine** (4 06)\
   Unloads previously loaded subroutine to save register space. #TODO - EXAMPLE SYNTAX
+
+- **Decode to V6Helper** (4 07)\
+  Decodes instuction after this to the V6Helper format, a more suited processor for chained operations.
+
+- **Decode to V7** (4 08)\
+  Default mode. Decodes instructions after this to the V7 format (Mach-C format).
 
 - **Data End** (4 99)\
   End line for data, must be placed at the end of data line. `value1` and `value2` can and will be used as identifiers combined with the data start identifier creating a 20-digit long unique identifier for this specific data. **otherwise, the system will not be able to detect if the data line ended.**
@@ -422,7 +430,7 @@ Exceptions will occur when certain conditions did not went as expected. the proc
 
 ##
 ## Data structure #TODO - CHANGE EXAMPLE FORMATTING
-Every "file" will begin with ```4 00 0 0 00000 00000``` and end with ```4 99 0 0 00000 00000``` this is to make identification easier.
+Every "file" will begin with ```4 00 00 0000 0000 000``` and end with ```4 99 00 0000 0000 000``` this is to make identification easier.
 
 ##
 ###### Many thanks to everyone involved. - Sincerely, PT team.
