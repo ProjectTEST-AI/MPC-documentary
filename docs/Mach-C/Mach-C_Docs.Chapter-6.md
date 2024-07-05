@@ -1,14 +1,16 @@
 Project TEST presents
+
 > # MPC Custom language, nicknamed Mach-C (Mindustry Machine Code)
 
 # Mach-C structure documentation
+
 This page covers the strtucture of the encoding method used within the Mach-C language (Up to Chapter 6).
 
 **(This documentation covers the `interpreted` code's structure and commands.)**
 
 ## Current interpreted code formatting (Chapter 6):
 
-### ```1 12 34 9999 9999 999``` or ```1123499999999999```
+### `1 12 34 9999 9999 999` or `1123499999999999`
 
 `1` : [**opCodes**](#1-opcodes-and-their-respecting-sub-opcodes) (Operation Codes). Refrence numbers for the **general** type of operation.
 
@@ -25,15 +27,17 @@ This page covers the strtucture of the encoding method used within the Mach-C la
 ## Further documentation to formatting
 
 ### 1. opCodes and their respecting sub-opCodes
+
 **opCodes** or Operator codes are a **generalized group of functions** or type of operation.
 
 **sub-opCodes** are the **specific functions** or type of operation within a group of generalized functions (opCodes).
+
 ```
 (opCode) 1 : Mathematical operations
 (sub-opCode) 01 : Addition              [value1 + value2]
              02 : Subtraction           [value1 - value2]
              03 : Multiplication        [value1 * value2]
-             04 : Division              [value1 / value2]  
+             04 : Division              [value1 / value2]
              05 : Int Division          [value1 // value2] (outputs interger only)
              06 : Modulo                [value1 % value2]
              07 : Power                 [value1 ^ value2]
@@ -113,8 +117,11 @@ This page covers the strtucture of the encoding method used within the Mach-C la
 ```
 
 ##
+
 ### 2. Datatype of values and their (Positive/negative) properties.
+
 This value is a combination of two use cases, Datatype value and `value1` and `value2`'s positive/negative properties. This is to save the ammounts of digits to be used on the compiled code formatting. The comprehensive list of values are listed below, **We HIGHLY suggest using the search function to search for the right value.**
+
 ```
 01 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a positive number, value2 is a positive number
 02 = value1 is a normal value, value2 is a normal value, value3 is a RegisterID | value1 is a positive number, value2 is a negative number
@@ -191,7 +198,9 @@ This value is a combination of two use cases, Datatype value and `value1` and `v
 ```
 
 ##
+
 ### 3. Value(s) being processed
+
 Theese two values are the data that will be processed, sometimes one is used, and sometimes both are used. The first value is generally called V1 or value1 and the second value can be generally called V2 or value2.
 
 The range of the value extends **from 0000 to 9999**. Negative numbers can be achieved by the positive/negative value property or by putting the value inside a register or memory address.
@@ -199,106 +208,116 @@ The range of the value extends **from 0000 to 9999**. Negative numbers can be ac
 Any number higher than this requires a register or memory address which is explained [Here](#registers-and-memory-addresses).
 
 ##
+
 ### 4. Target output
+
 This value represents the output address of the processed value, this is where the processed value will be placed in.
 
 The datatype of this value is either a register address or a memory address.
 
 ##
+
 ## Further documentation to available functions
 
 ### Flow control (3)
+
 Flow control operations control how the data processing flows. This section is here to explain each functions in `Flow control`
 
-- **Jump** (3 01)\
- A function that **jumps a `value2`** ammount of lines **if `value1` is true**. Example syntax:
+-   **Jump** (3 01)\
+    A function that **jumps a `value2`** ammount of lines **if `value1` is true**. Example syntax:
 
-     ```3 01 4 1 00055 00002``` or ```30141000550002``` #TODO - CHANGE EXAMPLE FORMATTING
+        ```3 01 4 1 00055 00002``` or ```30141000550002``` #TODO - CHANGE EXAMPLE FORMATTING
 
-     The code above states if the value on register #`55` is 1, the processor will jump `2` lines after this line.
+        The code above states if the value on register #`55` is 1, the processor will jump `2` lines after this line.
 
-- **While** (3 02)\
-  A While loop function. We decided a for loop is unecessary since it can be achieved with only a while loop.
+-   **While** (3 02)\
+    A While loop function. We decided a for loop is unecessary since it can be achieved with only a while loop.
 
     **Loops a `value2` ammount of lines if `value1` is still true**. Example syntax:
 
-    ```3 02 4 1 00102 00005``` or ```30241001020005``` #TODO - CHANGE EXAMPLE FORMATTING
+    `3 02 4 1 00102 00005` or `30241001020005` #TODO - CHANGE EXAMPLE FORMATTING
 
-    The code above states that if the value on register #`102` is 1, it will run the next `5` lines of code and then checks again if register #`102` is still true, if it is then it will run it until the checked condition is false. 
-    
+    The code above states that if the value on register #`102` is 1, it will run the next `5` lines of code and then checks again if register #`102` is still true, if it is then it will run it until the checked condition is false.
+
     **The system will not be able to detect infinite loops, so you must terminate the task to stop it.**
 
-- **Call** (3 03)\
-  Calls a preloaded subroutine with a subroutine ID (`value1`) that is just a regular number, so you can use the datatype of regular number for this. Example syntax:
+-   **Call** (3 03)\
+    Calls a preloaded subroutine with a subroutine ID (`value1`) that is just a regular number, so you can use the datatype of regular number for this. Example syntax:
 
-  ```3 03 1 1 00005 00000``` or ```303110000500000``` #TODO - CHANGE EXAMPLE FORMATTING
+    `3 03 1 1 00005 00000` or `303110000500000` #TODO - CHANGE EXAMPLE FORMATTING
 
-  The code above states to call a subroutine with an ID of #`5`.
+    The code above states to call a subroutine with an ID of #`5`.
 
-- **Return** (3 04)\
-  A return line from the subroutine, must be placed on the end of a subroutine code.
+-   **Return** (3 04)\
+    A return line from the subroutine, must be placed on the end of a subroutine code.
 
 ##
+
 ### Data control (4)
+
 Data control operations control data positioning over several devices.
-- **Data start** (4 00)\
-  Starting line of some data, Must be placed on the start of every data. `value1` and `value2` can and will be used as identifiers for this specific data. if another data has the same identifier. the older one is eradicated.
 
-- **Save** (4 01)\
-  Saves data to a diskID (`value2`) from a specified memoryID or registryID (`value1`). Example syntax:
+-   **Data start** (4 00)\
+    Starting line of some data, Must be placed on the start of every data. `value1` and `value2` can and will be used as identifiers for this specific data. if another data has the same identifier. the older one is eradicated.
 
-  ```4 01 ``` or ```401```
+-   **Save** (4 01)\
+    Saves data to a diskID (`value2`) from a specified memoryID or registryID (`value1`). Example syntax:
 
-- **Load** (4 02)\
-  Loads data from a diskID (`value1`) to a memoryID (`value2`), therefore you must use the datatype of `0`. Example syntax:
+    `4 01 ` or `401`
 
-  ```4 02 0 1 04124 00205``` or ```402010412400205``` #TODO - CHANGE EXAMPLE FORMATTING
-  
-  The code above loads a data from diskID #`4124` to memoryID #`205`
+-   **Load** (4 02)\
+    Loads data from a diskID (`value1`) to a memoryID (`value2`), therefore you must use the datatype of `0`. Example syntax:
 
-- **Move** (4 03)\
-  A function to move data between Registers and Memory(RAM). this function depends on the datatype as it moves data from the ID of `value1` to the ID of `value2`. Example syntax:
+    `4 02 0 1 04124 00205` or `402010412400205` #TODO - CHANGE EXAMPLE FORMATTING
 
-  ```4 03 5 1 00520 00200``` or ```403510052000200``` #TODO - CHANGE EXAMPLE FORMATTING
+    The code above loads a data from diskID #`4124` to memoryID #`205`
 
-  The code above has the datatype of `value1` and `value2` to be register ID's, therefore moving data between registers, or in this example moving data from register #`520` to register #`200`.
+-   **Move** (4 03)\
+    A function to move data between Registers and Memory(RAM). this function depends on the datatype as it moves data from the ID of `value1` to the ID of `value2`. Example syntax:
 
-- **Set** (4 04)\
-  Sets a value (`value1`) to either a Register or Memory address (`value2`). Example syntax: 
+    `4 03 5 1 00520 00200` or `403510052000200` #TODO - CHANGE EXAMPLE FORMATTING
 
-  ```4 04 09 0069 0254 000``` or ```4040900690254000``` #TODO - CHANGE EXAMPLE FORMATTING
+    The code above has the datatype of `value1` and `value2` to be register ID's, therefore moving data between registers, or in this example moving data from register #`520` to register #`200`.
 
-  The code above sets the value of register #`254` to `69`. (`value3` is unused since this does not output anything.)
+-   **Set** (4 04)\
+    Sets a value (`value1`) to either a Register or Memory address (`value2`). Example syntax:
 
-- **Load Subroutine** (4 05)\
-  Loads a regular script from a memory address and assigns it with an ID that can be called mid-code multiple times. `value1` will be noted as the memoryID of the subroutine. Example syntax:
+    `4 04 09 0069 0254 000` or `4040900690254000` #TODO - CHANGE EXAMPLE FORMATTING
 
-  ```4 05 7 05764 00000``` or ```40570576400000``` #TODO - CHANGE EXAMPLE FORMATTING
+    The code above sets the value of register #`254` to `69`. (`value3` is unused since this does not output anything.)
 
-  The code above assigns memoryID #`5764` a subroutine ID that can be called anytime during the main code run.
+-   **Load Subroutine** (4 05)\
+    Loads a regular script from a memory address and assigns it with an ID that can be called mid-code multiple times. `value1` will be noted as the memoryID of the subroutine. Example syntax:
 
-- **Unload Subroutine** (4 06)\
-  Unloads previously loaded subroutine to save register space. #TODO - EXAMPLE SYNTAX
+    `4 05 7 05764 00000` or `40570576400000` #TODO - CHANGE EXAMPLE FORMATTING
 
-- **Decode to V6Helper** (4 07)\
-  Decodes instuction after this to the V6Helper format, a more suited processor for chained operations.
+    The code above assigns memoryID #`5764` a subroutine ID that can be called anytime during the main code run.
 
-- **Decode to V7** (4 08)\
-  Default mode. Decodes instructions after this to the V7 format (Mach-C format).
+-   **Unload Subroutine** (4 06)\
+    Unloads previously loaded subroutine to save register space. #TODO - EXAMPLE SYNTAX
 
-- **Data End** (4 99)\
-  End line for data, must be placed at the end of data line. `value1` and `value2` can and will be used as identifiers combined with the data start identifier creating a 20-digit long unique identifier for this specific data. **otherwise, the system will not be able to detect if the data line ended.**
+-   **Decode to V6Helper** (4 07)\
+    Decodes instuction after this to the V6Helper format, a more suited processor for chained operations.
+
+-   **Decode to V7** (4 08)\
+    Default mode. Decodes instructions after this to the V7 format (Mach-C format).
+
+-   **Data End** (4 99)\
+    End line for data, must be placed at the end of data line. `value1` and `value2` can and will be used as identifiers combined with the data start identifier creating a 20-digit long unique identifier for this specific data. **otherwise, the system will not be able to detect if the data line ended.**
 
 ##
+
 ### Registers and Memory addresses
+
 #### 1. Registers
+
 Registers are small memory points that is placed in the CPU core. You might think of L1, L2, or L3 caches but **Caches and Registers are different!**
 
 Caches are also small storages placed around the CPU. but in the context of this MPC, registers are variables in 1 single core, whilst caches are stored in small memory cells around it.
 
 Our Registers uses a tech by @Hasganter called L100 (yes even the name is misleading, sorry lol). basically it unlocks the ability to store values within a processor like a memory cell but if optimized, can be denser than a memory cell (more cells per block).
 
-> *"it is called L100 because it is actually slower than reading from a memory cell lmfao" - hasganter*
+> _"it is called L100 because it is actually slower than reading from a memory cell lmfao" - hasganter_
 
 So basically it is just extra space filler, meh.
 
@@ -307,29 +326,38 @@ The register address in this context can access **both actual registers and cach
 **Currently, we have not decided on the numbers to access registers yet.**
 
 #### 2. Memory Addresses
+
 Memory in this context is the **RAM**. with this ID, the CPU will send a request to the RAM and obtain the value within the memory address provided.
 
 **Currently, we have not decided on the numbers to access the memory yet.**
 
 ##
+
 ### Subroutines
+
 Subroutines are basically custom functions that supports the `DRY` programming rule, `Don't Repeat Yourself`.
 
 Subroutines have the same structure as a regular scipt, but loaded as a subroutine. with the load subroutine function in Data control opCode.
 
 ##
+
 ### Exceptions
+
 Exceptions will occur when certain conditions did not went as expected. the procedure of an exception will be stopping current running program completely by rejecting every code inputted until an end block.
-- Unknown error (00)
-- Task killed (01)
-- Syntax error (02)
-- Subroutine is not detected or not preloaded (03)
-- No return line in subroutine (04)
-- Invalid datatype (05)
+
+-   Unknown error (00)
+-   Task killed (01)
+-   Syntax error (02)
+-   Subroutine is not detected or not preloaded (03)
+-   No return line in subroutine (04)
+-   Invalid datatype (05)
 
 ##
+
 ## Data structure #TODO - CHANGE EXAMPLE FORMATTING
-Every "file" will begin with ```4 00 00 0000 0000 000``` and end with ```4 99 00 0000 0000 000``` this is to make identification easier.
+
+Every "file" will begin with `4 00 00 0000 0000 000` and end with `4 99 00 0000 0000 000` this is to make identification easier.
 
 ##
+
 ###### Many thanks to everyone involved. - Sincerely, PT team.
