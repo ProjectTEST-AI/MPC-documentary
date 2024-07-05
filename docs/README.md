@@ -1,6 +1,6 @@
 # Welcome to the MPC documentation.
 
-MPC is an ongoing project by the team of Project TEST, Currently being worked on by:
+MPC is an ongoing flagship Mindustry project by the team of Project TEST, Currently being worked on by:
 
 > -   @Hasganter
 > -   @Yarplay
