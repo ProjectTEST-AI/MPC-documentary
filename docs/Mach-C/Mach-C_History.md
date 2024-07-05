@@ -43,7 +43,7 @@ With this, we can redesign our format to fit the limitations.
 
 ### 2. Improvements! :
 
-With the newfound info, we can conclude that our interpreted code has to fit within 15 digits (even though th elimit is 16 digits, just to be safe), and redesigned the interpreted code to be:
+With the newfound info, we can conclude that our interpreted code has to fit within 15 digits (even though the limit is 16 digits, just to be safe), and redesigned the interpreted code to be:
 
 **`10 100 99999 99999`** (15 digits, no spaces in the actual interpreted code)
 
