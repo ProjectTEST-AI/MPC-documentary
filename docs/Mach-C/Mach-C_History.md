@@ -160,18 +160,18 @@ Mindustry logic's interger limit is 2<sup>53</sup> or `9 007 199 254 740 992` in
 
 well, instead of partitioning base-10 numbers to have multiple data stored at once, we can use binary! How? well, see for yourself:
 
-`111 00000 11 00 1 0 0 1111..(x13) 0000...(x13) 11111..(x12) `
+`11111111 1 00 1 0 1111..(x20) 0000...(x20) `
 
-`111` : opCodes (converted to base-10, it can store a number from 0 to 7)
+`11111111` : opCodes (1 to 128)
 
-`00000` : sub-opCodes (0 to 31)
-
-`11` : datatype of value1 (0 to 3, even though we only need 0, 1, and 2)
+`1` : datatype of value1 (0 to 1)
 
 `00` : datatype of value2 (0 to 3, even though we only need 0, 1, and 2)
 
-`1` : datatype of value3 (0 and 1)
-
-`0` : negative / positive property of value1 (0 and 1)
+`1` : negative / positive property of value1 (0 and 1)
 
 `0` : negative / positive property of value2 (0 and 1)
+
+`1111..(x20)` : Register address for the target output and first value for operation
+
+`0000...(x20)` : Register address or regular value as the second value of operation

@@ -4,11 +4,11 @@ Project TEST presents
 
 # Mach-C structure documentation
 
-This page covers the strtucture of the encoding method used within the Mach-C language (Up to Chapter 6).
+This page covers the strtucture of the encoding method used within the Mach-C language (Up to Chapter 5).
 
 **(This documentation covers the `interpreted` code's structure and commands.)**
 
-## Current interpreted code formatting (Chapter 6):
+## Current interpreted code formatting (Chapter 5):
 
 ### `1 12 34 9999 9999 999` or `1123499999999999`
 
