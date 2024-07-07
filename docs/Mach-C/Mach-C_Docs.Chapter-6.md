@@ -20,7 +20,7 @@ This page covers the strtucture of the encoding method used within the Mach-C la
 
 `1` : negative / positive property of value1 (0 and 1)
 
-`0` : negative / positive property of value2 (0 and 1) discord...
+`0` : negative / positive property of value2 (0 and 1)
 
 `1111..(x20 total)` : Register address for the target output and first value for operation (0 to 33,554,432)
 
