@@ -1,5 +1,6 @@
 # VSC config files
 .vscode
+.vs
 
 # Test batch files
 *.bat
