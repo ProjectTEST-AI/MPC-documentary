@@ -37,6 +37,7 @@
 *.pidb
 *.svclog
 *.scc
+x64
 .vs
 
 # Visual C++ cache files
