@@ -10,9 +10,9 @@ This page covers the strtucture of the encoding method used within the Mach-C la
 
 ## Current interpreted code formatting (Chapter 6):
 
-### `111111111 1 00 1 0 1111..(x25 total) 0000...(x25 total) ` or in decimal?
+### `111111111 1 00 1 0 1111..(x20 total) 0000...(x20 total) ` or in decimal?
 
-`111111111` : opCodes (1 to 256)
+`11111111` : opCodes (1 to 255)
 
 `1` : datatype of value1 (0 to 1)
 
@@ -22,9 +22,9 @@ This page covers the strtucture of the encoding method used within the Mach-C la
 
 `0` : negative / positive property of value2 (0 and 1) discord...
 
-`1111..(x25 total)` : Register address for the target output and first value for operation (0 to 33,554,432)
+`1111..(x20 total)` : Register address for the target output and first value for operation (0 to 33,554,432)
 
-`0000...(x25 total)` : Register address or regular value as the second value of operation (0 to 33,554,432)
+`0000...(x20 total)` : Register address or regular value as the second value of operation (0 to 33,554,432)
 
 ## Further documentation to formatting
 
