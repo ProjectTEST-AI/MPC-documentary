@@ -4,6 +4,7 @@
 #include <string>
 
 enum class LogLevel {
+    EXCEPTION = -1,
     ERROR = 0,
     WARN = 1,
     HIGH = 2,

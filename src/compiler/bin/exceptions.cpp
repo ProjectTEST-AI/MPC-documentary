@@ -1,11 +1,18 @@
 #include <iostream>
 #include <exception>
 #include <string>
+#include <chrono>
 #include "exceptions.h"
 #include "logging.h"
 
+static auto timerStart{ std::chrono::high_resolution_clock::now() }, timerEnd{ std::chrono::high_resolution_clock::now() };
+
 void pauseExit(int code) {
-    std::cout << "\n" << "Closing with code " << code << ", Click enter to exit...";
+    log(LogLevel::LOW, "Stopping timer");
+    timerEnd = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timerEnd - timerStart);
+    std::cout << "\n" << "Transpiler took " << duration.count() << " microseconds of time.\n";
+    std::cout << "Closing with code " << code << ", Click enter to exit...";
     std::cin.get();
     std::exit(code);
 }
@@ -50,20 +57,22 @@ void parseAndProcess(std::string);
 // Wrapper function to handle exceptions
 void parseAndHandleExceptions(const std::string& file) {
     try {
-        log(LogLevel::LOW, "process reached main exception handler");
+        log(LogLevel::LOW, "Process reached main exception handler");
+        log(LogLevel::LOW, "Starting timer");
+        timerStart = std::chrono::high_resolution_clock::now();
         parseAndProcess(file);
     }
     catch (const InvalidSyntax& e) {
-        log(LogLevel::ERROR, e.what());
+        log(LogLevel::EXCEPTION, e.what());
         pauseExit(1);
     }
     catch (const FileError& e) {
-        log(LogLevel::ERROR, e.what());
+        log(LogLevel::EXCEPTION, e.what());
         pauseExit(2);
     }
     catch (const std::exception& e) {
-        log(LogLevel::ERROR, "Unexpected error : ");
-        log(LogLevel::ERROR, e.what());
+        log(LogLevel::EXCEPTION, "Unexpected error : ");
+        log(LogLevel::EXCEPTION, e.what());
         pauseExit(99);
     }
 }

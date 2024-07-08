@@ -38,6 +38,9 @@ void log(LogLevel level, const std::string& msg) {
         case LogLevel::ERROR:
             std::cerr << "[ERROR] : " << msg << "\n";
             break;
+        case LogLevel::EXCEPTION:
+            std::cerr << "[EXCEPTION] : " << msg << "\n";
+            break;
         }
     }
 }

@@ -192,15 +192,15 @@ int main() {
     setLogLevel(logLevel);
 
     try {
-        log(LogLevel::LOW, "Starting main process");
+        log(LogLevel::HIGH, "Starting main process");
         parseAndHandleExceptions(sourceFile);
-        log(LogLevel::HIGH, "Main process completed successfully");
+        log(LogLevel::LOW, "Main process completed successfully");
     }
     catch (const std::exception& e) {
-        log(LogLevel::ERROR, "Main process failed to run: " + std::string(e.what()));
+        log(LogLevel::EXCEPTION, "Main process failed to run: " + std::string(e.what()));
         pauseExit(99);
     }
 
-    log(LogLevel::HIGH, "SUcessfully executed, exitting.");
+    log(LogLevel::HIGH, "Sucessfully executed, exitting.");
     pauseExit(0);
 }
