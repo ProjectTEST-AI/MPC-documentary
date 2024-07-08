@@ -2,6 +2,7 @@
 #define LOGGING_H
 
 #include <string>
+#include <source_location>
 
 enum class LogLevel {
     EXCEPTION = -1,
@@ -11,7 +12,9 @@ enum class LogLevel {
     LOW = 3
 };
 
+constexpr LogLevel DEFAULT_LOG_LEVEL = LogLevel::WARN;
+
 void setLogLevel(int level);
-void log(LogLevel level, const std::string& msg);
+void log(LogLevel level, const std::string& msg, const std::source_location& location = std::source_location::current());
 
 #endif

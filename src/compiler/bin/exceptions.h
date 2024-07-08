@@ -1,23 +1,19 @@
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
-// function that handles exit codes
+// Function that handles exit codes
 void pauseExit(int code = 0);
 
 // Function for the wrapper that handles exceptions
 void parseAndHandleExceptions(const std::string& file);
 
-// syntax errors
-class InvalidSyntax : public std::exception {
-private:
-    std::string message;
-
+// Syntax errors
+class InvalidSyntax : public std::runtime_error {
 public:
     explicit InvalidSyntax(const std::string& msg);
-    virtual const char* what() const noexcept override;
 
     static InvalidSyntax emptyCode();
     static InvalidSyntax invalidToken();
@@ -25,16 +21,15 @@ public:
     static InvalidSyntax invalidInstruction();
 };
 
-// file errors
-class FileError : public std::exception {
-private:
-    std::string message;
-
+// File errors
+class FileError : public std::runtime_error {
 public:
     explicit FileError(const std::string& msg);
-    virtual const char* what() const noexcept override;
 
     static FileError noFile();
 };
+
+// Declaration of parseAndProcess function
+void parseAndProcess(const std::string& sourceFile);
 
 #endif

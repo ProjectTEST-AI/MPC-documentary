@@ -1,26 +1,32 @@
+#include <format>
+#include <array>
 #include "operations.h"
 #include "logging.h"
+#include "utils.h"
 
-std::unordered_map<std::string, int> Operations::registers;
+namespace {
+    std::string formatBinary(std::span<const std::string_view> operands) {
+        log(LogLevel::LOW, "Formatting binary operation");
+        int opcode = Operations::instructionMap.at(operands[0]).opcode;
+        std::array<int, 2> dataTypes = { getDataType(operands[1]), getDataType(operands[2]) };
+        std::array<int, 2> negatives = { isNegative(operands[1]), isNegative(operands[2]) };
+        std::array<std::string_view, 2> rawValues = { stripSymbols(operands[1]), stripSymbols(operands[2]) };
+        return formatInstruction(opcode, dataTypes, negatives, rawValues);
+    }
 
-const std::unordered_map<std::string, std::function<void(const std::string&, const std::string&)>> Operations::instructionMap = {
-    {"ADD", Operations::add},
-    {"SUB", Operations::sub}
-    // TODO: Add more operations
+    std::string formatUnary(std::span<const std::string_view> operands) {
+        log(LogLevel::LOW, "Formatting unary operation");
+        int opcode = Operations::instructionMap.at(operands[0]).opcode;
+        int dataType = getDataType(operands[1]);
+        int negative = isNegative(operands[1]);
+        std::string_view rawValue = stripSymbols(operands[1]);
+        return std::format("{} {} {} {}", opcode, dataType, negative, rawValue);
+    }
+}
+
+const std::unordered_map<std::string_view, InstructionInfo> Operations::instructionMap = {
+    {"ADD", {1, 2, formatBinary}},
+    {"SUB", {2, 2, formatBinary}}
+    //! Format for new instructions {"instruction shorthand name", {(instruction opCode, (operand count), (formatting style)}}
+    // TODO: Add more operations here
 };
-
-void Operations::add(const std::string& reg1, const std::string& reg2) {
-    log(LogLevel::LOW, "Performing ADD operation: " + reg1 + " + " + reg2);
-    log(LogLevel::LOW, "Before: " + reg1 + " = " + std::to_string(registers[reg1]) + ", " + reg2 + " = " + std::to_string(registers[reg2]));
-    registers[reg1] += registers[reg2];
-    log(LogLevel::LOW, "After: " + reg1 + " = " + std::to_string(registers[reg1]));
-    log(LogLevel::HIGH, "Added #" + reg2 + " to #" + reg1);
-}
-
-void Operations::sub(const std::string& reg1, const std::string& reg2) {
-    log(LogLevel::LOW, "Performing SUB operation: " + reg1 + " - " + reg2);
-    log(LogLevel::LOW, "Before: " + reg1 + " = " + std::to_string(registers[reg1]) + ", " + reg2 + " = " + std::to_string(registers[reg2]));
-    registers[reg1] -= registers[reg2];
-    log(LogLevel::LOW, "After: " + reg1 + " = " + std::to_string(registers[reg1]));
-    log(LogLevel::HIGH, "Subtracted #" + reg2 + " from #" + reg1);
-}

@@ -1,46 +1,36 @@
 #include <iostream>
+#include <array>
+#include <format>
 #include "logging.h"
 
-static LogLevel currentLogLevel = LogLevel::ERROR;
+namespace {
+    LogLevel currentLogLevel = DEFAULT_LOG_LEVEL;
 
-void setLogLevel(int level) {
-    switch (level) {
-    case 0:
-        currentLogLevel = LogLevel::ERROR;
-        break;
-    case 1:
-        currentLogLevel = LogLevel::WARN;
-        break;
-    case 2:
-        currentLogLevel = LogLevel::HIGH;
-        break;
-    case 3:
-        currentLogLevel = LogLevel::LOW;
-        break;
-    default:
-        currentLogLevel = LogLevel::ERROR;
-        break;
+    struct LogConfig {
+        const char* prefix;
+        std::ostream* stream;
+    };
+
+    constexpr std::array<LogConfig, 5> configs = { {
+        {"[EXCEPTION] : ", &std::cerr},
+        {"[ERROR] : ", &std::cerr},
+        {"[WARN] : ", &std::cout},
+        {"[HIGH] : ", &std::clog},
+        {"[LOW] : ", &std::clog}
+    } };
+
+    constexpr const LogConfig& getLogConfig(LogLevel level) {
+        return configs[static_cast<int>(level) + 1];
     }
 }
 
-void log(LogLevel level, const std::string& msg) {
+void setLogLevel(int level) {
+    currentLogLevel = static_cast<LogLevel>(std::min(std::max(level, 0), 3));
+}
+
+void log(LogLevel level, const std::string& msg, const std::source_location& location) {
     if (level <= currentLogLevel) {
-        switch (level) {
-        case LogLevel::LOW:
-            std::clog << "[L1] : " << msg << "\n";
-            break;
-        case LogLevel::HIGH:
-            std::clog << "[LH] : " << msg << "\n";
-            break;
-        case LogLevel::WARN:
-            std::cout << "[WARN] : " << msg << "\n";
-            break;
-        case LogLevel::ERROR:
-            std::cerr << "[ERROR] : " << msg << "\n";
-            break;
-        case LogLevel::EXCEPTION:
-            std::cerr << "[EXCEPTION] : " << msg << "\n";
-            break;
-        }
+        const auto& config = getLogConfig(level);
+        *config.stream << std::format("{}{}:{} {}\n", config.prefix, location.file_name(), location.line(), msg);
     }
 }
