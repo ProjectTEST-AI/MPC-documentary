@@ -1,7 +1,7 @@
 #include <iostream>
 #include <array>
 #include <format>
-#include "logging.h"
+#include "../include/logging.h"
 
 namespace {
     LogLevel currentLogLevel = DEFAULT_LOG_LEVEL;

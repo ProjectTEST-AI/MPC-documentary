@@ -4,10 +4,10 @@
 #include <filesystem>
 #include <format>
 #include <limits>
-#include "bin/exceptions.h"
-#include "bin/operations.h"
-#include "bin/logging.h"
-#include "bin/utils.h"
+#include "../include/exceptions.h"
+#include "../include/operations.h"
+#include "../include/logging.h"
+#include "../include/utils.h"
 
 namespace fs = std::filesystem;
 

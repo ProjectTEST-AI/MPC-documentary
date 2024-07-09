@@ -15,33 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="compiler.cpp">
+    <ClCompile Include="src\compiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bin\exceptions.cpp">
+    <ClCompile Include="src\exceptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bin\operations.cpp">
+    <ClCompile Include="src\logging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bin\logging.cpp">
+    <ClCompile Include="src\operations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bin\utils.cpp">
+    <ClCompile Include="src\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bin\exceptions.h">
+    <ClInclude Include="include\exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bin\operations.h">
+    <ClInclude Include="include\logging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bin\logging.h">
+    <ClInclude Include="include\operations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bin\utils.h">
+    <ClInclude Include="include\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

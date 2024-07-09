@@ -18,6 +18,19 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\compiler.cpp" />
+    <ClCompile Include="src\exceptions.cpp" />
+    <ClCompile Include="src\logging.cpp" />
+    <ClCompile Include="src\operations.cpp" />
+    <ClCompile Include="src\utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\exceptions.h" />
+    <ClInclude Include="include\logging.h" />
+    <ClInclude Include="include\operations.h" />
+    <ClInclude Include="include\utils.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -128,19 +141,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="bin\exceptions.cpp" />
-    <ClCompile Include="bin\logging.cpp" />
-    <ClCompile Include="bin\operations.cpp" />
-    <ClCompile Include="bin\utils.cpp" />
-    <ClCompile Include="compiler.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="bin\exceptions.h" />
-    <ClInclude Include="bin\logging.h" />
-    <ClInclude Include="bin\operations.h" />
-    <ClInclude Include="bin\utils.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

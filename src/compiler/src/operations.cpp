@@ -1,6 +1,6 @@
-#include "operations.h"
-#include "logging.h"
-#include "utils.h"
+#include "../include/operations.h"
+#include "../include/logging.h"
+#include "../include/utils.h"
 #include <format>
 #include <array>
 #include <algorithm>
