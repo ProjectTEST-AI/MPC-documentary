@@ -15,8 +15,8 @@ namespace {
         {"[EXCEPTION] : ", &std::cerr},
         {"[ERROR] : ", &std::cerr},
         {"[WARN] : ", &std::cout},
-        {"[HIGH] : ", &std::clog},
-        {"[LOW] : ", &std::clog}
+        {"[LH] : ", &std::clog},
+        {"[L1] : ", &std::clog}
     } };
 
     constexpr const LogConfig& getLogConfig(LogLevel level) {

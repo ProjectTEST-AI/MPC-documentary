@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 #include "exceptions.h"
 #include "logging.h"
@@ -12,7 +13,27 @@ void pauseExit(int code) {
     log(LogLevel::LOW, "Stopping timer");
     timerEnd = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timerEnd - timerStart);
-    std::cout << "\nTranspiler took " << duration.count() << " microseconds.\n";
+
+    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration);
+    duration -= minutes;
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
+    duration -= seconds;
+    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+    duration -= milliseconds;
+    auto microseconds = duration;
+
+    std::cout << "\nTranspiler took ";
+    if (minutes.count() > 0) {
+        std::cout << minutes.count() << " minutes, ";
+    }
+    if (seconds.count() > 0 || minutes.count() > 0) {
+        std::cout << seconds.count() << " seconds, ";
+    }
+    if (milliseconds.count() > 0 || seconds.count() > 0 || minutes.count() > 0) {
+        std::cout << milliseconds.count() << " milliseconds, ";
+    }
+    std::cout << microseconds.count() << " microseconds.\n";
+
     std::cout << "Exiting with code " << code << " || ";
     std::system("pause");
     std::exit(code);

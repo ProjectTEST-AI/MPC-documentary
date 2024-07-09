@@ -1,8 +1,28 @@
-#include <format>
-#include <array>
 #include "operations.h"
 #include "logging.h"
 #include "utils.h"
+#include <format>
+#include <array>
+#include <algorithm>
+#include <cctype>
+
+OperandType getOperandType(std::string_view operand) noexcept {
+    OperandType type = OperandType::None;
+
+    if (!operand.empty() && operand[0] == '-') {
+        type = type | OperandType::Negative;
+        operand.remove_prefix(1);
+    }
+
+    if (!operand.empty()) {
+        switch (operand[0]) {
+        case '#': return type | OperandType::Register;
+        case '@': return type | OperandType::Memory;
+        default: return type | OperandType::Immediate;
+        }
+    }
+    return type;
+}
 
 namespace {
     std::string formatBinary(std::span<const std::string_view> operands) {
@@ -25,8 +45,26 @@ namespace {
 }
 
 const std::unordered_map<std::string_view, InstructionInfo> Operations::instructionMap = {
-    {"ADD", {1, 2, formatBinary}},
-    {"SUB", {2, 2, formatBinary}}
-    //! Format for new instructions {"instruction shorthand name", {(instruction opCode, (operand count), (formatting style)}}
-    // TODO: Add more operations here
+    {"ADD", {1, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"SUB", {2, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"MOV", {3, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"INC", {4, {OperandType::Register | OperandType::Memory}, formatUnary}},
+    {"DEC", {5, {OperandType::Register | OperandType::Memory}, formatUnary}},
+    {"NEG", {6, {OperandType::Register | OperandType::Memory}, formatUnary}},
 };
+
+bool isValidInstruction(std::string_view instruction) {
+    return Operations::instructionMap.find(instruction) != Operations::instructionMap.end();
+}
+
+bool validateOperands(std::span<const std::string_view> operands, std::span<const OperandType> allowedTypes) {
+    if (operands.size() != allowedTypes.size()) return false;
+
+    for (size_t i = 0; i < operands.size(); ++i) {
+        OperandType type = getOperandType(operands[i]);
+        if (!isOperandTypeValid(allowedTypes[i], type)) {
+            return false;
+        }
+    }
+    return true;
+}

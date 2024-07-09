@@ -11,34 +11,64 @@
 
 namespace fs = std::filesystem;
 
-void parseInstruction(std::string_view line, int lineNumber) {
-    log(LogLevel::LOW, std::format("Parsing instruction on line {}: {}", lineNumber, line));
+JumpLabels jumpLabels;
 
-    auto operands = split(line, ' ');
+void parseInstruction(const std::string& line, int lineNumber) {
+    log(LogLevel::LOW, std::format("Entering parseInstruction function for line {}", lineNumber));
 
-    auto it = Operations::instructionMap.find(operands[0]);
+    std::string_view trimmedLine = trimComment(line);
+    if (isComment(trimmedLine) || trim(trimmedLine).empty()) {
+        log(LogLevel::LOW, "Skipping comment or empty line");
+        return;
+    }
+
+    if (trimmedLine.ends_with(':')) {
+        std::string_view label = trim(trimmedLine.substr(0, trimmedLine.size() - 1));
+        jumpLabels.addLabel(label, lineNumber);
+        log(LogLevel::LOW, std::format("Added jump label: {} at line {}", label, lineNumber));
+        return;
+    }
+
+    log(LogLevel::LOW, std::format("Parsing instruction: {}", trimmedLine));
+
+    auto operands = split(trimmedLine, ' ');
+    operands.shrink_to_fit();
+
+    log(LogLevel::LOW, std::format("Extracted instruction: {} with {} operands", operands[0], operands.size() - 1));
+
+    std::string upperInstruction(operands[0]);
+    std::transform(upperInstruction.begin(), upperInstruction.end(), upperInstruction.begin(), ::toupper);
+
+    auto it = Operations::instructionMap.find(upperInstruction);
     if (it == Operations::instructionMap.end()) {
         log(LogLevel::ERROR, std::format("Unknown instruction '{}' on line {}", operands[0], lineNumber));
         throw InvalidSyntax::invalidInstruction();
     }
 
+    if (upperInstruction != operands[0]) {
+        log(LogLevel::WARN, std::format("Instruction '{}' is not capitalized on line {}", operands[0], lineNumber));
+    }
+
     const auto& instructionInfo = it->second;
 
-    if (operands.size() - 1 != instructionInfo.operandCount) {
-        log(LogLevel::ERROR, std::format("Invalid number of operands for instruction '{}' on line {}", operands[0], lineNumber));
+    // Create a span of string_views for the operands, excluding the instruction itself
+    std::span<const std::string_view> operandSpan(operands.begin() + 1, operands.end());
+
+    if (!validateOperands(operandSpan, instructionInfo.allowedOperands)) {
+        log(LogLevel::ERROR, std::format("Invalid operands for instruction '{}' on line {}", operands[0], lineNumber));
         throw InvalidSyntax::invalidInstruction();
     }
 
-    std::vector<std::string_view> operandViews;
-    operandViews.reserve(operands.size());
-    for (const auto& op : operands) {
-        operandViews.push_back(op);
-    }
+    log(LogLevel::LOW, std::format("Found instruction '{}' with opcode {}", upperInstruction, instructionInfo.opcode));
 
-    std::string transpiled = instructionInfo.formatFunc(operandViews);
+    log(LogLevel::LOW, "Formatting instruction");
+    std::string transpiled = instructionInfo.formatFunc(operands);
+
 
     log(LogLevel::HIGH, std::format("Transpiled format: {}", transpiled));
-    std::cout << transpiled << '\n';
+    std::cout << std::move(transpiled) << std::endl;
+
+    log(LogLevel::LOW, "Exiting parseInstruction function");
 }
 
 void parseAndProcess(const std::string& sourceFile) {
