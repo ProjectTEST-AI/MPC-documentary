@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cctype>
 
+// 
+
 namespace {
     std::string formatBinary(std::span<const std::string_view> operands) {
         log(LogLevel::LOW, "Formatting binary operation");
@@ -49,16 +51,6 @@ OperandType getOperandType(std::string_view operand) noexcept {
     return type;
 }
 
-const std::unordered_map<std::string_view, InstructionInfo> Operations::instructionMap = {
-    {"ADD", {1, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
-    {"SUB", {2, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
-    {"MOV", {3, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
-    {"INC", {4, {OperandType::Register | OperandType::Memory}, formatUnary}},
-    {"DEC", {5, {OperandType::Register | OperandType::Memory}, formatUnary}},
-    {"NEG", {6, {OperandType::Register | OperandType::Memory}, formatUnary}}
-    //TODO: ADD MORE SHIT HERE!!! DID YOU JUST FORGOT?
-};
-
 bool isValidInstruction(std::string_view instruction) {
     return Operations::instructionMap.find(instruction) != Operations::instructionMap.end();
 }
@@ -74,3 +66,72 @@ bool validateOperands(std::span<const std::string_view> operands, std::span<cons
     }
     return true;
 }
+
+const std::unordered_map<std::string_view, InstructionInfo> Operations::instructionMap = {
+    // Math operations
+    {"ADD", {1, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"SUB", {2, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"MUL", {3, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"DIV", {4, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"IDIV", {5, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"MOD", {6, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"POW", {7, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"EXP", {8, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"LOG", {9, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"LN", {10, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"SQRT", {11, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"MAX", {12, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"MIN", {13, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"FLR", {14, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"CEIL", {15, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"ABS", {16, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"SIN", {17, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"COS", {18, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"TAN", {19, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"ASIN", {20, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"ACOS", {21, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"ATAN", {22, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"AOV", {23, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"DOV", {24, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"LOV", {25, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"SXN", {26, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"RND", {27, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"CSC", {28, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"SEC", {29, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"COT", {30, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"ACSC", {31, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"ASEC", {32, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+    {"ACOT", {33, {OperandType::Register | OperandType::Memory | OperandType::Negative}, formatUnary}},
+
+    // Data comparisons
+    {"EQL", {34, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"NEQ", {35, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"LAND", {36, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"LTH", {37, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"LET", {38, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"MTH", {39, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"MET", {40, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"SEQ", {41, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"BOR", {42, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"BAND", {43, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"BXOR", {44, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"BFL", {45, {OperandType::Register | OperandType::Memory}, formatUnary}},
+    {"BSL", {46, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+    {"BSR", {47, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate}, formatBinary}},
+
+    //TODO: Flow control
+    // soonTM
+    //! jump is currently hardcoded
+
+    // Data management
+    // {"SAV", {52, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    // {"LOD", {53, {OperandType::Register | OperandType::Memory | OperandType::Negative, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    {"MOV", {54, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory}, formatBinary}},
+    {"SET", {55, {OperandType::Register | OperandType::Memory, OperandType::Register | OperandType::Memory | OperandType::Immediate | OperandType::Negative}, formatBinary}},
+    // {"LSUB", {56, {, }, }},
+    // {"USUB", {56, {, }, }},
+    // {"DHLP", {57, {, }, }},
+    // {"DREG", {58, {, }, }},
+
+    //TODO: ADD MORE HERE!!!
+};

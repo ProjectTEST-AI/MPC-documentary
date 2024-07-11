@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
         std::cout << std::format("-- BENCHMARK {}x ACTIVE --\n", benchmarkIterations);
     }
     else if (benchmarkIterations < 0) {
-        std::cout << "-- ERR: BENCHMARK ITERATION CANNOT BE LESS THAN 0 --";
+        std::cout << "-- ERR: BENCHMARK ITERATION CANNOT BE LESS THAN 0 --" << std::endl << "PROCEEDING..";
     }
 
     std::cout << "File Name: ";
@@ -114,6 +114,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Logging Level (0-3): ";
     std::cin >> logLevel;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    setLogLevel(std::clamp(logLevel, 0, 3));
 
     std::cout << "Use Multithreading? (y/n): ";
     char multiThreadChoice;
@@ -135,8 +136,6 @@ int main(int argc, char* argv[]) {
             setOutputFile("");
         }
     }
-
-    setLogLevel(std::clamp(logLevel, 0, 3));
 
     try {
         timer.timeStamp("start");
