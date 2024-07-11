@@ -6,12 +6,30 @@
 #include <algorithm>
 #include <cctype>
 
-// 
-
 namespace {
+    std::array<char, 256> uppercaseTable = []() {
+        std::array<char, 256> table{};
+        for (int i = 0; i < 256; ++i) {
+            table[i] = static_cast<char>(std::toupper(i));
+        }
+        return table;
+        }();
+
+    [[nodiscard]] std::string_view toUpperView(std::string_view sv) {
+        const char* data = sv.data();
+        for (size_t i = 0; i < sv.size(); ++i) {
+            if (data[i] != uppercaseTable[static_cast<unsigned char>(data[i])]) {
+                std::string upper(sv);
+                std::transform(upper.begin() + i, upper.end(), upper.begin() + i,
+                    [](unsigned char c) { return uppercaseTable[c]; });
+                return upper;
+            }
+        }
+        return sv;
+    }
+
     std::string formatBinary(std::span<const std::string_view> operands) {
-        log(LogLevel::LOW, "Formatting binary operation");
-        int opcode = Operations::instructionMap.at(operands[0]).opcode;
+        int opcode = Operations::instructionMap.at(toUpperView(operands[0])).opcode;
         std::array<int, 2> dataTypes = { getDataType(operands[1]), getDataType(operands[2]) };
         std::array<bool, 2> negatives = { isNegative(operands[1]), isNegative(operands[2]) };
         std::array<uint32_t, 2> values = {
@@ -23,8 +41,7 @@ namespace {
     }
 
     std::string formatUnary(std::span<const std::string_view> operands) {
-        log(LogLevel::LOW, "Formatting unary operation");
-        int opcode = Operations::instructionMap.at(operands[0]).opcode;
+        int opcode = Operations::instructionMap.at(toUpperView(operands[0])).opcode;
         int dataType = getDataType(operands[1]);
         bool negative = isNegative(operands[1]);
         uint32_t value = static_cast<uint32_t>(std::stoul(std::string(stripSymbols(operands[1]))));
@@ -52,7 +69,7 @@ OperandType getOperandType(std::string_view operand) noexcept {
 }
 
 bool isValidInstruction(std::string_view instruction) {
-    return Operations::instructionMap.find(instruction) != Operations::instructionMap.end();
+    return Operations::instructionMap.find(toUpperView(instruction)) != Operations::instructionMap.end();
 }
 
 bool validateOperands(std::span<const std::string_view> operands, std::span<const OperandType> allowedTypes) {

@@ -46,7 +46,7 @@ public:
 }
 
 [[nodiscard]] std::string_view stripSymbols(std::string_view value) noexcept;
-[[nodiscard]] std::string formatInstruction(int opcode, std::span<const int> dataTypes, std::span<const int> negatives, std::span<const std::string_view> rawValues);
+// [[nodiscard]] std::string formatInstruction(int opcode, std::span<const int> dataTypes, std::span<const int> negatives, std::span<const std::string_view> rawValues);
 [[nodiscard]] std::vector<std::string_view> split(std::string_view s, char delimiter);
 
 [[nodiscard]] inline std::string_view trimComment(std::span<const char> line) noexcept {

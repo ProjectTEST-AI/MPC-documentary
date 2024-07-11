@@ -67,8 +67,9 @@ void pauseExit(const int code) {
 void runBenchmark(std::string_view sourceFile, bool multithread, int iterations) {
     Timer benchmarkTime;
     durations.reserve(iterations);
+    std::cout << "-- BENCHMARKING IN PROGRESS --\n";
 
-    for (int i = 0; i < iterations; ++i) {
+    for (int i = 1; i <= iterations; ++i) {
         try {
             resetOutputBuffer();
             benchmarkTime.timeStamp("start");
@@ -86,7 +87,7 @@ void runBenchmark(std::string_view sourceFile, bool multithread, int iterations)
 int main(int argc, char* argv[]) {
     int logLevel;
     bool multithread;
-    int benchmarkIterations = 5;
+    int benchmarkIterations = 10000;
     std::string sourceFile, outputFile;
 
     // Parse command-line arguments
@@ -98,11 +99,14 @@ int main(int argc, char* argv[]) {
     }
 
     // Benchmark check
-    if (benchmarkIterations > 0) {
+    if (benchmarkIterations != 0) {
         std::cout << std::format("-- BENCHMARK {}x ACTIVE --\n", benchmarkIterations);
     }
     else if (benchmarkIterations < 0) {
-        std::cout << "-- ERR: BENCHMARK ITERATION CANNOT BE LESS THAN 0 --" << std::endl << "PROCEEDING..";
+        std::cout << "-- ERR: BENCHMARK ITERATION CANNOT BE LESS THAN 0 --\nPROCEEDING..\n";
+    }
+    else {
+        std::cout << "-- MACl to Mach-C transpiler --\n";
     }
 
     std::cout << "File Name: ";
