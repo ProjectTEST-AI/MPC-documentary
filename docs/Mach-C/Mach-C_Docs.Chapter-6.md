@@ -10,9 +10,9 @@ This page covers the strtucture of the encoding method used within the Mach-C la
 
 ## Current interpreted code formatting (Chapter 6):
 
-### `111111111 1 00 1 0 1111..(x20 total) 0000...(x20 total) ` or in decimal?
+### `111111111 1 00 1 0 1111..(x20 total) 0000...(x20 total) `
 
-`11111111` : opCodes (1 to 255)
+`11111111` : opCodes (1 to 127)
 
 `1` : datatype of value1 (0 to 1)
 
@@ -22,9 +22,9 @@ This page covers the strtucture of the encoding method used within the Mach-C la
 
 `0` : negative / positive property of value2 (0 and 1)
 
-`1111..(x20 total)` : Register address for the target output and first value for operation (0 to 33,554,432)
+`1111..(x20 total)` : Register address for the target output and first value for operation (0 to 1,048,575)
 
-`0000...(x20 total)` : Register address or regular value as the second value of operation (0 to 33,554,432)
+`0000...(x20 total)` : Register address or regular value as the second value of operation (0 to 1,048,575)
 
 ## Further documentation to formatting
 
@@ -45,8 +45,8 @@ This page covers the strtucture of the encoding method used within the Mach-C la
 09 : Base-10 logarithm     [ log 10 (value 1) ]
 10 : Natural logarithm     [ log e (value 1) ]
 11 : Square root           [ sqrt(value1) ]
-12 : Maximum of two values [ max(value1) ]
-13 : Minimum of two values [ min(value1) ]
+12 : Maximum of two values [ max(value1, value2) ]
+13 : Minimum of two values [ min(value1, value2) ]
 14 : Floor                 [ floor(value1) ]
 15 : Ceiling               [ ceil(value1) ]
 16 : Absolute value        [ abs(value1) ]
