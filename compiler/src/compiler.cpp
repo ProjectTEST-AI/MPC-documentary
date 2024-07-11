@@ -78,17 +78,13 @@ std::string parseInstruction(std::span<const char> line, size_t lineNumber) {
     log(LogLevel::HIGH, std::format("Transpiled format: {}", transpiled));
 
     log(LogLevel::LOW, "Exiting parseInstruction function");
-    return transpiled;
+    return transpiled + "\n";
 }
 
-void parseAndProcess(std::string_view sourceFile, std::string_view outputFile, bool useMultithreading) {
+void parseAndProcess(std::string_view sourceFile, bool useMultithreading) {
     try {
         MemoryMappedFile mmapFile(sourceFile);
         std::span fileContent = mmapFile.get_span();
-
-        if (!outputFile.empty()) {
-            setOutputFile(outputFile);
-        }
 
         std::vector<std::pair<size_t, std::string_view>> lines;
         size_t lineNumber = 1;
@@ -103,53 +99,41 @@ void parseAndProcess(std::string_view sourceFile, std::string_view outputFile, b
         if (useMultithreading) {
             unsigned int threadCount = std::max(1U, std::thread::hardware_concurrency());
             std::atomic<size_t> lineIndex(0);
-            std::atomic<int> activeThreads(threadCount);
+            std::vector<std::future<void>> futures;
 
             auto worker = [&]() {
-                try {
-                    std::vector<std::string> localBuffer;
-                    while (true) {
-                        size_t index = lineIndex.fetch_add(1, std::memory_order_relaxed);
-                        if (index >= lines.size()) break;
+                std::vector<std::string> localBuffer;
+                while (true) {
+                    size_t index = lineIndex.fetch_add(1, std::memory_order_relaxed);
+                    if (index >= lines.size()) break;
 
-                        std::string result = parseInstruction(lines[index].second, lines[index].first);
-                        localBuffer.push_back(std::move(result));
+                    std::string result = parseInstruction(lines[index].second, lines[index].first);
+                    localBuffer.push_back(std::move(result));
 
-                        if (localBuffer.size() >= 100) {  // Batch size
-                            std::string batchedOutput;
-                            for (const auto& str : localBuffer) {
-                                batchedOutput += str;
-                            }
-                            bufferOutput(std::move(batchedOutput));
-                            localBuffer.clear();
-                        }
-                    }
-                    if (!localBuffer.empty()) {
+                    if (localBuffer.size() <= 100) {  // Batch size
                         std::string batchedOutput;
                         for (const auto& str : localBuffer) {
                             batchedOutput += str;
                         }
                         bufferOutput(std::move(batchedOutput));
+                        localBuffer.clear();
                     }
-                    activeThreads.fetch_sub(1, std::memory_order_relaxed);
                 }
-                catch (const std::exception& e) {
-                    log(LogLevel::EXCEPTION, std::format("Worker thread exception: {}", e.what()));
-                    activeThreads.fetch_sub(1, std::memory_order_relaxed);
+                if (!localBuffer.empty()) {
+                    std::string batchedOutput;
+                    for (const auto& str : localBuffer) {
+                        batchedOutput += str;
+                    }
+                    bufferOutput(std::move(batchedOutput));
                 }
                 };
 
-            std::vector<std::thread> threads;
             for (unsigned int i = 0; i < threadCount; ++i) {
-                threads.emplace_back(worker);
+                futures.emplace_back(std::async(std::launch::async, worker));
             }
 
-            for (auto& thread : threads) {
-                thread.join();
-            }
-
-            while (activeThreads.load(std::memory_order_relaxed) > 0) {
-                std::this_thread::yield();
+            for (auto& future : futures) {
+                future.get();
             }
         }
         else {
@@ -157,6 +141,15 @@ void parseAndProcess(std::string_view sourceFile, std::string_view outputFile, b
                 bufferOutput(parseInstruction(line, lineNumber));
             }
         }
+    }
+    catch (const std::system_error& e) {
+        if (e.code() == std::errc::resource_deadlock_would_occur) {
+            log(LogLevel::CRIT, std::format("Potential deadlock detected: {}", e.what()));
+        }
+        else {
+            log(LogLevel::CRIT, std::format("System error: {}", e.what()));
+        }
+        throw;
     }
     catch (const FileError& e) {
         log(LogLevel::CRIT, std::format("File error: {}", e.what()));

@@ -20,6 +20,7 @@ void setLogLevel(int level);
 void log(LogLevel level, std::string_view msg, const std::source_location& location = std::source_location::current());
 void flushLogs();
 void flushOutput();
+void resetOutputBuffer();
 void bufferOutput(std::string_view msg);
 void setOutputFile(std::string_view filename);
 

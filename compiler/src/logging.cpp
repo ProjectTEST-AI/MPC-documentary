@@ -6,6 +6,7 @@
 #include <mutex>
 #include <cstdint>
 #include <fstream>
+#include <numeric>
 #include <algorithm>
 #include <sstream>
 #include <string.h>
@@ -15,10 +16,10 @@ void pauseExit(int);
 namespace {
     LogLevel currentLogLevel = DEFAULT_LOG_LEVEL;
     std::vector<std::string> logBuffer;
-    std::stringstream outputBuffer;
+    std::string outputFileName;
+    std::vector<std::string> outputBuffer;
     std::mutex logMutex;
-    std::ofstream outputFile;
-    constexpr std::size_t MAX_BUFFER_SIZE = 1024 * 1024; // 1 MB
+    constexpr std::size_t MAX_BUFFER_SIZE = 500 * 1024 * 1024; // 500 MB
 
     struct LogConfig {
         const char* prefix;
@@ -62,50 +63,58 @@ void flushLogs() {
     logBuffer.clear();
 }
 
-// this thing prone to break fr
-void flushOutput() {
+void setOutputFile(std::string_view filename) {
     std::lock_guard<std::mutex> lock(logMutex);
-    log(LogLevel::LOW, "Entering flushOutput()");
-
-    if (outputFile.is_open()) {
-        log(LogLevel::LOW, "Flushing to file");
-        outputFile << outputBuffer.str();
-        outputFile.flush();
-        if (!outputFile) {
-            log(LogLevel::CRIT, std::format("File write error occurred. Error: {}", std::strerror(errno)));
-            throw FileError::fileWriteError();
-        }
-    }
-    else {
-        log(LogLevel::LOW, "Flushing to console");
-        std::cout << outputBuffer.str() << std::flush;
-    }
-
-    outputBuffer.str("");
-    outputBuffer.clear();
-    log(LogLevel::LOW, "Exiting flushOutput()");
+    outputFileName = filename;
+    log(LogLevel::LOW, std::format("Output file set to: {}", filename.empty() ? "console" : filename));
 }
 
 void bufferOutput(std::string_view msg) {
     std::lock_guard<std::mutex> lock(logMutex);
-    outputBuffer << msg;
-    if (static_cast<std::size_t>(outputBuffer.tellp()) >= MAX_BUFFER_SIZE) {
-        flushOutput();
+    outputBuffer.push_back(std::string(msg));
+
+    size_t totalSize = std::accumulate(outputBuffer.begin(), outputBuffer.end(), 0ULL,
+        [](size_t sum, const std::string& s) { return sum + s.size(); });
+
+    if (totalSize > MAX_BUFFER_SIZE) {
+        log(LogLevel::CRIT, "Output buffer size exceeded 500MB limit");
+        throw std::runtime_error("Output buffer size exceeded 500MB limit");
     }
 }
 
-void setOutputFile(std::string_view filename) {
-    log(LogLevel::LOW, std::format("Attempting to set output file: {}", filename));
-    outputFile.open(filename.data(), std::ios::out | std::ios::trunc);
-    if (!outputFile.is_open()) {
-        log(LogLevel::CRIT, std::format("Failed to open output file: {}. Error: {}", filename, std::strerror(errno)));
-        throw FileError::invalidOutputFile();
+void flushOutput() {
+    std::lock_guard<std::mutex> lock(logMutex);
+
+    if (outputFileName.empty()) {
+        // Output to console
+        for (const auto& line : outputBuffer) {
+            std::cout << line;
+        }
+        std::cout.flush();
     }
-    outputFile << "Test write\n";
-    if (!outputFile) {
-        log(LogLevel::CRIT, std::format("Failed to write to output file: {}. Error: {}", filename, std::strerror(errno)));
-        throw FileError::fileWriteError();
+    else {
+        // Output to file
+        std::ofstream outFile(outputFileName, std::ios::out | std::ios::app);
+        if (!outFile.is_open()) {
+            log(LogLevel::CRIT, std::format("Failed to open output file: {}.", outputFileName));
+            throw FileError::invalidOutputFile();
+        }
+
+        for (const auto& line : outputBuffer) {
+            outFile << line;
+        }
+        outFile.flush();
+
+        if (!outFile.good()) {
+            log(LogLevel::CRIT, std::format("Failed to write to output file: {}.", outputFileName));
+            throw FileError::fileWriteError();
+        }
     }
-    outputFile.flush();
-    log(LogLevel::LOW, "Output file successfully set and tested");
+
+    // Clear the buffer after successful write
+    outputBuffer.clear();
+}
+
+void resetOutputBuffer() {
+    outputBuffer.clear();
 }
