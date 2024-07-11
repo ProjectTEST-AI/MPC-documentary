@@ -87,7 +87,7 @@ void runBenchmark(std::string_view sourceFile, bool multithread, int iterations)
 int main(int argc, char* argv[]) {
     int logLevel;
     bool multithread;
-    int benchmarkIterations = 10000;
+    int benchmarkIterations = 0;
     std::string sourceFile, outputFile;
 
     // Parse command-line arguments
