@@ -60,6 +60,8 @@ void flushLogs() {
     for (const auto& logMessage : logBuffer) {
         std::cout << logMessage;
     }
+
+    log(LogLevel::HIGH, "Clearing logs buffer..");
     logBuffer.clear();
 }
 
@@ -112,9 +114,11 @@ void flushOutput() {
     }
 
     // Clear the buffer after successful write
+    log(LogLevel::HIGH, "Clearing output buffer..");
     outputBuffer.clear();
 }
 
 void resetOutputBuffer() {
+    log(LogLevel::HIGH, "Clearing output buffer..");
     outputBuffer.clear();
 }
