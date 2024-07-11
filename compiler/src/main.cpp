@@ -13,55 +13,66 @@
 #include "../include/operations.h"
 #include "../include/exceptions.h"
 
-namespace { Timer timer; };
-void parseAndProcess(std::string_view sourceFile, std::string_view outputFile, bool useMultithreading);
+namespace { Timer timer; std::vector<double> durations; };
+void parseAndProcess(std::string_view sourceFile, bool useMultithreading);
 
 void pauseExit(const int code) {
-    timer.timeStamp();
     try {
         flushOutput();
+        flushLogs();
+        timer.timeStamp();
+        auto duration = timer.getDuration();
+
+        if (!durations.empty()) {
+            auto [min, max] = std::minmax_element(durations.begin(), durations.end());
+            double average = std::accumulate(durations.begin(), durations.end(), 0.0) / durations.size();
+
+            std::cout << std::format("\nBenchmark results ({} iterations):\n"
+                "Average time: {:.2f} ms\n"
+                "Min time    : {:.2f} ms\n"
+                "Max time    : {:.2f} ms\n",
+                durations.size(), average, *min, *max);
+        }
+
+        auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration);
+        duration -= minutes;
+        auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
+        duration -= seconds;
+        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+        duration -= milliseconds;
+        auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration);
+
+        std::cout << "\nIn total, Transpiler took ";
+        if (minutes.count() > 0) {
+            std::cout << minutes.count() << " minutes, ";
+        }
+        if (seconds.count() > 0 || minutes.count() > 0) {
+            std::cout << seconds.count() << " seconds, ";
+        }
+        if (milliseconds.count() > 0 || seconds.count() > 0 || minutes.count() > 0) {
+            std::cout << milliseconds.count() << " milliseconds, and ";
+        }
+        std::cout << microseconds.count() << " microseconds.\n";
+
+        std::cout << "Exiting with code " << code << " || ";
+        std::system("pause");
     }
     catch (const std::exception& e) {
-        log(LogLevel::CRIT, std::format("Error during final output flush: {}", e.what()));
+        log(LogLevel::CRIT, std::format("Error in pauseExit: {}", e.what()));
     }
-    flushLogs();
 
-    auto duration = timer.getDuration();
-
-    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration);
-    duration -= minutes;
-    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
-    duration -= seconds;
-    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-    duration -= milliseconds;
-    auto microseconds = duration;
-
-    std::cout << "\nDone.\nTranspiler took ";
-    if (minutes.count() > 0) {
-        std::cout << minutes.count() << " minutes, ";
-    }
-    if (seconds.count() > 0 || minutes.count() > 0) {
-        std::cout << seconds.count() << " seconds, ";
-    }
-    if (milliseconds.count() > 0 || seconds.count() > 0 || minutes.count() > 0) {
-        std::cout << milliseconds.count() << " milliseconds, ";
-    }
-    std::cout << microseconds.count() << " microseconds.\n";
-
-    std::cout << "Exiting with code " << code << " || ";
-    std::system("pause");
     std::exit(code);
 }
 
-void runBenchmark(std::string_view sourceFile, std::string_view outputFile, bool multithread, int iterations) {
+void runBenchmark(std::string_view sourceFile, bool multithread, int iterations) {
     Timer benchmarkTime;
-    std::vector<double> durations;
     durations.reserve(iterations);
 
     for (int i = 0; i < iterations; ++i) {
         try {
+            resetOutputBuffer();
             benchmarkTime.timeStamp("start");
-            parseAndProcess(sourceFile, outputFile, multithread);
+            parseAndProcess(sourceFile, multithread);
             benchmarkTime.timeStamp("end");
             durations.push_back(benchmarkTime.getDuration().count());
         }
@@ -69,15 +80,6 @@ void runBenchmark(std::string_view sourceFile, std::string_view outputFile, bool
             log(LogLevel::EXCEPTION, std::format("Error during benchmark iteration {}: {}", i, e.what()));
         }
     }
-
-    auto [min, max] = std::minmax_element(durations.begin(), durations.end());
-    double average = std::accumulate(durations.begin(), durations.end(), 0.0) / durations.size();
-
-    std::cout << std::format("\nBenchmark results ({} iterations):\n"
-        "Average time: {:.2f} ms\n"
-        "Min time    : {:.2f} ms\n"
-        "Max time    : {:.2f} ms\n",
-        durations.size(), average, *min, *max);
 }
 
 //! Benchmark can only be enabled in console when executing program with --bm (iterations)
@@ -96,9 +98,11 @@ int main(int argc, char* argv[]) {
     }
 
     // Benchmark check
-    if (benchmarkIterations != 0) {
-
+    if (benchmarkIterations > 0) {
         std::cout << std::format("-- BENCHMARK {}x ACTIVE --\n", benchmarkIterations);
+    }
+    else if (benchmarkIterations < 0) {
+        std::cout << "-- ERR: BENCHMARK ITERATION CANNOT BE LESS THAN 0 --";
     }
 
     std::cout << "File Name: ";
@@ -137,10 +141,10 @@ int main(int argc, char* argv[]) {
     try {
         timer.timeStamp("start");
         if (benchmarkIterations > 0) {
-            runBenchmark(sourceFile, outputFile, multithread, benchmarkIterations);
+            runBenchmark(sourceFile, multithread, benchmarkIterations);
         }
         else {
-            parseAndProcess(sourceFile, outputFile, multithread);
+            parseAndProcess(sourceFile, multithread);
             log(LogLevel::HIGH, "Processing completed successfully.\n");
         }
         flushLogs();

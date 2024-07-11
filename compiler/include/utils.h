@@ -12,6 +12,7 @@
 #include <chrono>
 #include <algorithm>
 #include <vector>
+#include <cstdint>
 #include <unordered_map>
 
 class Timer {
@@ -72,5 +73,7 @@ public:
 private:
     std::unordered_map<std::string, int> labels;
 };
+
+uint64_t formatInstructionToInt(int opcode, int dataType1, int dataType2, bool negative1, bool negative2, uint32_t value1, uint32_t value2);
 
 #endif
