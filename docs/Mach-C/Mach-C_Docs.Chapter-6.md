@@ -4,7 +4,7 @@ Project TEST presents
 
 # Mach-C structure documentation
 
-This page covers the strtucture of the encoding method used within the Mach-C language (Chapter 6).
+This page covers the strtucture of the encoding method used within the Mach-C language (Chapter 6 - LEFT UNFINSIHED).
 
 **(This documentation covers the `interpreted` code's structure and commands.)**
 

@@ -175,3 +175,23 @@ well, instead of partitioning base-10 numbers to have multiple data stored at on
 `1111..(x20)` : Register address for the target output and first value for operation
 
 `0000...(x20)` : Register address or regular value as the second value of operation
+
+##
+
+### 7. Time skip
+
+Months have passed, the project was put on hold for a long while. But randomly, @hasganter went back on the project.
+
+Chapter 6, where it was left off was where we discovered/used the base-2 binary system and how it can be used to store multiple data in a single memory cell. Implementation of it looks messy and restricted, but it works. *Kinda*
+
+Instead of re-wrapping around chapter 6, we decided to ditch chapter 6 and went straight to chapter 7.
+
+Chapter 7 in its base was Chapter 6, but with a different approach. We decided on dynamic code structure implementation, where the Mach-C instruction set can have multiple structures for their code format. We call these Formats of Instructions.
+
+Each Format of Instructions has its own unique structure and can be used to represent different types of instructions. But all of them have a common size of 53 bits. Any that are shorter than 53 bits will be padded with 0's to maintain a constant position of the opCode at the start.
+
+At first, there were only 2 formats of instructions, but as we went on, we decided to add more formats to the instruction set. After migrating most of past ideas into this new format, we brainstormed for ideas on memory addresses.
+
+At the end, we decided for a three space memory address system, where the first space is for the registry with a size of 64 variables (L100 internal variables), the second space is for the cache shared across all cores (for future multicore setup), and the third space is for the unified RAM address which will have a slightly more compact setup than caches.
+
+Initially, RAM had the same setup as caches, but after brainstorming, we decided to make it more compact. By that, we optimized ram for bulk data storage. For one RAM address, it points to 8 cells of data (inside a memory bank). This effectively octuples the maximum size of RAM addressable data compared to caches.

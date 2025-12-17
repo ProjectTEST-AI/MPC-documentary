@@ -108,3 +108,7 @@ bld/
 *.out
 *.app
 *.bat
+
+# Build files
+build/
+.cache/
