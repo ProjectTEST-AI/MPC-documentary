@@ -130,7 +130,7 @@ Before, we were thinking that the result of an equation can be overwritten on `v
 
 ### 6. A whole new realm
 
-So @hasganter just had a brainfart; Our formatting structure right now uses base-10 numerical digits, but what if we use base-2 binary system within base-10 numerical system, confused? ill explain.
+So [@hasganter](https://github.com/hasganter) just had a brainfart; Our formatting structure right now uses base-10 numerical digits, but what if we use base-2 binary system within base-10 numerical system, confused? ill explain.
 
 Currently, our formatting structure uses base-10 numerical system (numbers 1-10). We section off certain parts of a whole number and assigning it to a specific value like:
 
@@ -180,7 +180,7 @@ well, instead of partitioning base-10 numbers to have multiple data stored at on
 
 ### 7. Time skip
 
-Months have passed, the project was put on hold for a long while. But randomly, @hasganter went back on the project.
+Months have passed, the project was put on hold for a long while. But randomly, [@hasganter](https://github.com/hasganter) went back on the project.
 
 Chapter 6, where it was left off was where we discovered/used the base-2 binary system and how it can be used to store multiple data in a single memory cell. Implementation of it looks messy and restricted, but it works. *Kinda*
 
