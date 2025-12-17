@@ -1,24 +1,23 @@
-#ifndef MEMORY_MAPPED_FILE_HPP
-#define MEMORY_MAPPED_FILE_HPP
+#pragma once
 
+#include <span>
 #include <string>
 #include <stdexcept>
-#include <span>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <tchar.h>
+#include <windows.h>
 #else
-#include <sys/mman.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #endif
 
 class MemoryMappedFile {
 public:
-    MemoryMappedFile(const std::string_view& filename) {
+    explicit MemoryMappedFile(const std::string& filename) {
 #ifdef _WIN32
         std::wstring wfilename(filename.begin(), filename.end());
         hFile = CreateFile(wfilename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -89,5 +88,3 @@ private:
     char* data;
     size_t size;
 };
-
-#endif

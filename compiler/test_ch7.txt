@@ -1,0 +1,48 @@
+/ Small test file for new Chapter 7 instruction set
+/ === F_RR: Math operations ===
+ADD #16 #17
+SUB #18 #19
+MUL #20 5
+DIV #21 #22
+SQR #23
+SIN #24
+MAX #25 #26
+
+/ === F_RI: Immediate operations ===
+STR #30 42
+ADDI #31 100
+SUBI #32 50
+SHLI #33 3
+
+/ === F_RC: Register-Cache ===
+LRC #40 #41
+SRC #42 #43
+XCHC #44 #45
+CCPY #46 #47 #48
+
+/ === F_RM: Register-RAM ===
+LRM #50 #51
+SRM #52 #53
+XCHR #54 #55
+LEA #56 #57 #58
+
+/ === F_CM: Cache-Memory ===
+LCM #60 #61
+SCM #62 #63
+CMCPY #10 #11 #12
+CMSTR #13 #14 #15
+
+/ === F_RW: World operations ===
+LINK #35 0
+SENS #36 #35 #37
+CTRL #35 #38 #39
+PRNT #36
+DRAW #1 #2 #3
+UBND #4
+
+/ === F_JC: Flow control ===
+JMP 100
+JEQ #16 #17 200
+CALL 500
+RET
+HLT

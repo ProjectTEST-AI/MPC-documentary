@@ -1,35 +1,66 @@
-#include "../include/utils.h"
 #include <cctype>
-#include <format>
-#include <bitset>
-#include <limits>
+#include "../include/utils.h"
 
-uint64_t formatInstructionToInt(int opcode, int dataType1, int dataType2, bool negative1, bool negative2, uint32_t value1, uint32_t value2) {
+// Chapter 7: Format F_RR encoding
+// [52:46] opcode(7b) [45:40] out(6b) [39:34] src1(6b) [33:28] src2(6b) [27:22] opt1(6b) [21:16] opt2(6b) [15:0] padding(16b)
+uint64_t formatF_RR(int opcode, uint8_t out, uint8_t src1, uint8_t src2, uint8_t opt1, uint8_t opt2) {
     uint64_t result = 0;
-
-    // Opcode (8 bits)
-    result |= (static_cast<uint64_t>(opcode) & 0xFF) << 56;
-
-    // Data types (2 bits each)
-    result |= (static_cast<uint64_t>(dataType1) & 0x3) << 54;
-    result |= (static_cast<uint64_t>(dataType2) & 0x3) << 52;
-
-    // Negative flags (1 bit each)
-    result |= (negative1 ? 1ULL : 0ULL) << 51;
-    result |= (negative2 ? 1ULL : 0ULL) << 50;
-
-    // Values (20 bits each)
-    result |= (static_cast<uint64_t>(value1) & 0xFFFFF) << 20;
-    result |= (static_cast<uint64_t>(value2) & 0xFFFFF);
-
+    result |= (static_cast<uint64_t>(opcode) & 0x7F) << 46;  // 7-bit opcode
+    result |= (static_cast<uint64_t>(out) & 0x3F) << 40;     // 6-bit out
+    result |= (static_cast<uint64_t>(src1) & 0x3F) << 34;    // 6-bit src1
+    result |= (static_cast<uint64_t>(src2) & 0x3F) << 28;    // 6-bit src2
+    result |= (static_cast<uint64_t>(opt1) & 0x3F) << 22;    // 6-bit opt1
+    result |= (static_cast<uint64_t>(opt2) & 0x3F) << 16;    // 6-bit opt2
+    // padding [15:0] is zeros
     return result;
 }
 
-/* old formatting
-std::string formatInstruction(int opcode, std::span<const int> dataTypes, std::span<const int> negatives, std::span<const std::string_view> rawValues) {
-   return std::format("{} {} {} {} {} {} {}", opcode, dataTypes[0], dataTypes[1], negatives[0], negatives[1], rawValues[0], rawValues[1]);
+// Chapter 7: Format F_RI encoding
+// [52:46] opcode(7b) [45:40] out(6b) [39:8] src1(32b) [7:0] padding(8b)
+uint64_t formatF_RI(int opcode, uint8_t out, uint32_t immediate) {
+    uint64_t result = 0;
+    result |= (static_cast<uint64_t>(opcode) & 0x7F) << 46;  // 7-bit opcode
+    result |= (static_cast<uint64_t>(out) & 0x3F) << 40;     // 6-bit out
+    result |= (static_cast<uint64_t>(immediate) & 0xFFFFFFFF) << 8;  // 32-bit immediate
+    // padding [7:0] is zeros
+    return result;
 }
-*/
+
+// Chapter 7: Format F_RM encoding (Register-Indirect)
+// [52:46] opcode(7b) [45:40] dest(6b) [39:34] addrReg(6b) [33:28] srcReg(6b) [27:0] padding(28b)
+uint64_t formatF_RM(int opcode, uint8_t dest, uint8_t addrReg, uint8_t srcReg) {
+    uint64_t result = 0;
+    result |= (static_cast<uint64_t>(opcode) & 0x7F) << 46;     // 7-bit opcode
+    result |= (static_cast<uint64_t>(dest) & 0x3F) << 40;       // 6-bit dest
+    result |= (static_cast<uint64_t>(addrReg) & 0x3F) << 34;    // 6-bit addrReg
+    result |= (static_cast<uint64_t>(srcReg) & 0x3F) << 28;     // 6-bit srcReg
+    // padding [27:0] is zeros
+    return result;
+}
+
+// Chapter 7: Format F_RW encoding
+// [52:46] opcode(7b) [45:40] out(6b) [39:34] bldg(6b) [33:28] x(6b) [27:22] y(6b) [21:0] padding(22b)
+uint64_t formatF_RW(int opcode, uint8_t out, uint8_t bldg, uint8_t x, uint8_t y) {
+    uint64_t result = 0;
+    result |= (static_cast<uint64_t>(opcode) & 0x7F) << 46;  // 7-bit opcode
+    result |= (static_cast<uint64_t>(out) & 0x3F) << 40;     // 6-bit out
+    result |= (static_cast<uint64_t>(bldg) & 0x3F) << 34;    // 6-bit bldg
+    result |= (static_cast<uint64_t>(x) & 0x3F) << 28;       // 6-bit x
+    result |= (static_cast<uint64_t>(y) & 0x3F) << 22;       // 6-bit y
+    // padding [21:0] is zeros
+    return result;
+}
+
+// Chapter 7: Format F_JC encoding
+// [52:46] opcode(7b) [45:40] cond(6b) [39:34] reg(6b) [33:0] target(34b)
+uint64_t formatF_JC(int opcode, uint8_t cond, uint8_t reg, uint64_t target) {
+    uint64_t result = 0;
+    result |= (static_cast<uint64_t>(opcode) & 0x7F) << 46;  // 7-bit opcode
+    result |= (static_cast<uint64_t>(cond) & 0x3F) << 40;    // 6-bit cond
+    result |= (static_cast<uint64_t>(reg) & 0x3F) << 34;     // 6-bit reg
+    result |= (target & 0x3FFFFFFFF);                         // 34-bit target
+    return result;
+}
 
 std::string_view stripSymbols(std::string_view value) noexcept {
     auto it = std::ranges::find_if(value, [](char c) { return std::isdigit(c) != 0; });
@@ -50,11 +81,16 @@ std::vector<std::string_view> split(std::string_view s, char delimiter) {
     return tokens;
 }
 
+
 void JumpLabels::addLabel(std::string_view label, int lineNumber) {
-    labels.emplace(std::string(label), lineNumber);
+    std::lock_guard lock(labelMutex);
+    labels[std::string(label)] = lineNumber;
 }
 
-int JumpLabels::getLineNumber(std::string_view label) const {
-    auto it = labels.find(std::string(label));
-    return it != labels.end() ? it->second : -1;
+int JumpLabels::getLineNumber(std::string_view label) {
+    std::lock_guard lock(labelMutex);
+    if (auto it = labels.find(std::string(label)) ; it != labels.end()) {
+        return it->second;
+    }
+    return -1; 
 }

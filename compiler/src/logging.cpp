@@ -1,15 +1,13 @@
-#include "../include/logging.h"
-#include "../include/exceptions.h"
-#include <iostream>
-#include <format>
-#include <array>
 #include <mutex>
-#include <cstdint>
+#include <array>
+#include <format>
+#include <vector>
 #include <fstream>
 #include <numeric>
+#include <iostream>
 #include <algorithm>
-#include <sstream>
-#include <string.h>
+#include "../include/logging.h"
+#include "../include/exceptions.h"
 
 void pauseExit(int);
 
@@ -18,7 +16,11 @@ namespace {
     std::vector<std::string> logBuffer;
     std::string outputFileName;
     std::vector<std::string> outputBuffer;
+    
+    // Separate mutexes to prevent deadlock
     std::mutex logMutex;
+    std::mutex outputMutex;
+    
     constexpr std::size_t MAX_BUFFER_SIZE = 500 * 1024 * 1024; // 500 MB
 
     struct LogConfig {
@@ -26,99 +28,137 @@ namespace {
         std::ostream* stream;
     };
 
-    constexpr std::array<LogConfig, 5> configs = { {
-        {"[EXCEPTION] : ", &std::cerr},
-        {"[ERROR] : ", &std::cerr},
-        {"[WARN] : ", &std::cout},
-        {"[LH] : ", &std::clog},
-        {"[L1] : ", &std::clog}
+    constexpr std::array<LogConfig, 4> configs = { {
+        {"[CRITICAL] ", &std::cerr},
+        {"[ERROR] ", &std::cerr},
+        {"[WARN] ", &std::cout},
+        {"[INFO] ", &std::clog}
     } };
 
     constexpr const LogConfig& getLogConfig(LogLevel level) {
-        return configs[static_cast<int>(level) + 1];
+        return configs[static_cast<int>(level)];
+    }
+
+    void logImpl(LogLevel level, std::string_view msg, bool exc_info,
+                 const std::source_location& location) {
+        if (level <= currentLogLevel) {
+            const auto& config = getLogConfig(level);
+            std::string logMessage;
+            
+            if (exc_info) {
+                // Include file and line info for exceptions
+                logMessage = std::format("{}{}:{} {}\n", 
+                    config.prefix, location.file_name(), location.line(), msg);
+            } else {
+                logMessage = std::format("{}{}\n", config.prefix, msg);
+            }
+
+            std::lock_guard lock(logMutex);
+            logBuffer.push_back(std::move(logMessage));
+        }
     }
 }
 
-void setLogLevel(int level) {
+// Global logger instance
+const Logger log;
+
+void Logger::setLevel(int level) const {
     currentLogLevel = static_cast<LogLevel>(std::clamp(level, 0, 3));
 }
 
-void log(LogLevel level, std::string_view msg, const std::source_location& location) {
-    if (level <= currentLogLevel) {
-        const auto& config = getLogConfig(level);
-        std::string logMessage = std::format("{}{}:{} {}\n", config.prefix, level >= LogLevel::WARN ? "" : location.file_name(), location.line(), msg);
-
-        std::lock_guard<std::mutex> lock(logMutex);
-        logBuffer.push_back(std::move(logMessage));
-    }
+void Logger::info(std::string_view msg, const std::source_location& location) const {
+    logImpl(LogLevel::INFO, msg, false, location);
 }
 
-void flushLogs() {
-    std::lock_guard<std::mutex> lock(logMutex);
+void Logger::warn(std::string_view msg, const std::source_location& location) const {
+    logImpl(LogLevel::WARN, msg, false, location);
+}
 
-    // Flush logs
+void Logger::error(std::string_view msg, bool exc_info, const std::source_location& location) const {
+    logImpl(LogLevel::ERROR, msg, exc_info, location);
+}
+
+void Logger::critical(std::string_view msg, bool exc_info, const std::source_location& location) const {
+    logImpl(LogLevel::CRITICAL, msg, exc_info, location);
+}
+
+void Logger::flush() const {
+    std::lock_guard lock(logMutex);
+
     for (const auto& logMessage : logBuffer) {
         std::cout << logMessage;
     }
+    std::cout.flush();
 
-    log(LogLevel::HIGH, "Clearing logs buffer..");
     logBuffer.clear();
 }
 
 void setOutputFile(std::string_view filename) {
-    std::lock_guard<std::mutex> lock(logMutex);
-    outputFileName = filename;
-    log(LogLevel::LOW, std::format("Output file set to: {}", filename.empty() ? "console" : filename));
+    {
+        std::lock_guard lock(outputMutex);
+        outputFileName = filename;
+    }
+    // Log AFTER releasing the lock
+    log.info(std::format("Output file set to: {}", filename.empty() ? "console" : filename));
 }
 
 void bufferOutput(std::string_view msg) {
-    std::lock_guard<std::mutex> lock(logMutex);
-    outputBuffer.push_back(std::string(msg));
+    std::lock_guard lock(outputMutex);
+    outputBuffer.emplace_back(msg);
 
     size_t totalSize = std::accumulate(outputBuffer.begin(), outputBuffer.end(), 0ULL,
-        [](size_t sum, const std::string& s) { return sum + s.size(); });
+        [](size_t sum, const std::string_view& s) { return sum + s.size(); });
 
     if (totalSize > MAX_BUFFER_SIZE) {
-        log(LogLevel::CRIT, "Output buffer size exceeded 500MB limit");
-        throw std::runtime_error("Output buffer size exceeded 500MB limit");
+        // Can't call log here while holding lock, throw directly
+        throw OutputBufferError::overLimit(MAX_BUFFER_SIZE, totalSize);
     }
 }
 
 void flushOutput() {
-    std::lock_guard<std::mutex> lock(logMutex);
+    std::string fileName;
+    std::vector<std::string> buffer;
+    
+    // Copy data under lock, then release
+    {
+        std::lock_guard lock(outputMutex);
+        fileName = outputFileName;
+        buffer = std::move(outputBuffer);
+        outputBuffer.clear();
+    }
 
-    if (outputFileName.empty()) {
-        // Output to console
-        for (const auto& line : outputBuffer) {
+    // Now process without holding the lock
+    if (fileName.empty()) {
+        for (const auto& line : buffer) {
             std::cout << line;
         }
         std::cout.flush();
     }
     else {
-        // Output to file
-        std::ofstream outFile(outputFileName, std::ios::out | std::ios::app);
+        std::ofstream outFile(fileName, std::ios::out | std::ios::app);
         if (!outFile.is_open()) {
-            log(LogLevel::CRIT, std::format("Failed to open output file: {}.", outputFileName));
+            log.critical(std::format("Failed to open output file: {}.", fileName));
             throw FileError::invalidOutputFile();
         }
 
-        for (const auto& line : outputBuffer) {
+        for (const auto& line : buffer) {
             outFile << line;
         }
         outFile.flush();
 
         if (!outFile.good()) {
-            log(LogLevel::CRIT, std::format("Failed to write to output file: {}.", outputFileName));
+            log.critical(std::format("Failed to write to output file: {}.", fileName));
             throw FileError::fileWriteError();
         }
     }
 
-    // Clear the buffer after successful write
-    log(LogLevel::HIGH, "Clearing output buffer..");
-    outputBuffer.clear();
+    log.info("Output buffer flushed.");
 }
 
 void resetOutputBuffer() {
-    log(LogLevel::HIGH, "Clearing output buffer..");
-    outputBuffer.clear();
+    {
+        std::lock_guard lock(outputMutex);
+        outputBuffer.clear();
+    }
+    log.info("Output buffer cleared.");
 }
